@@ -1,6 +1,10 @@
 name: 'Hello World'
 description: 'Greet someone and record the time'
 inputs:
+  token:
+    description: 'github token'
+    required: false
+    default: ''
   ucsmetadata:
     description: 'U-CS metadata spec'
     required: false
