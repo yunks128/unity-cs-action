@@ -9635,7 +9635,7 @@ async function spinUpEKS(meta, token) {
             let wf = await octokit.rest.actions.createWorkflowDispatch({
                 owner: "unity-sds",
                 repo: "unity-cs-infra",
-                workflow_id: "deploy_eks_callable.yml",
+                workflow_id: "deploy_eks.yml",
                 ref: "main",
             });
             console.log(wf)
