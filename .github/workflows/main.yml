@@ -1,22 +1,22 @@
 on:
-workflow_dispatch:
-  branches: [ main ]
-  inputs:
-    KEY:
-      description: 'Access Key ID'
-      required: true
-      type: string
-      default: ''
-    SECRET:
-      description: 'Access Secret Key ID'
-      required: true
-      type: string
-      default: ''
-    TOKEN:
-      description: 'AWS Session Token'
-      required: true
-      type: string
-      default: ''
+  workflow_dispatch:
+    branches: [ main ]
+    inputs:
+      KEY:
+        description: 'Access Key ID'
+        required: true
+        type: string
+        default: ''
+      SECRET:
+        description: 'Access Secret Key ID'
+        required: true
+        type: string
+        default: ''
+      TOKEN:
+        description: 'AWS Session Token'
+        required: true
+        type: string
+        default: ''
 jobs:
   hello_world_job:
     runs-on: ubuntu-latest
