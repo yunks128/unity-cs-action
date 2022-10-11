@@ -16,7 +16,7 @@ inputs:
   eksrunner:
     description: "workflow to run for eks deployments"
     required: true
-    default: "deploy_eks_callable.yml"
+    default: "deploy_eks.yml"
 outputs:
   eksmeta:
     description: 'EKS metadata'
