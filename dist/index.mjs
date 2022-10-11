@@ -9627,7 +9627,8 @@ var __webpack_exports__ = {};
 
 
 
-async function spinUpEKS(meta) {
+async function spinUpEKS(meta, token) {
+    let octokit = _actions_github__WEBPACK_IMPORTED_MODULE_0__.getOctokit(token)
     if (meta.hasOwnProperty("extensions")) {
         if (meta["extensions"].hasOwnProperty("kubernetes")) {
             console.log("call eks workflow")
