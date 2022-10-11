@@ -47,7 +47,7 @@ export async function runWF(owner: string, ref: string, repo: string, token: str
                     : WORKFLOW_FETCH_TIMEOUT_MS
             );
 
-            core.info(
+            core.debug(
                 `Attempting to get step names for Run IDs: [${workflowRunIds}]`
             );
 
@@ -60,11 +60,7 @@ export async function runWF(owner: string, ref: string, repo: string, token: str
             for (const id of workflowRunIds) {
                 try {
                     const steps = await api.getWorkflowRunJobSteps(id);
-                    core.info(
-                        `Attempting to get step names for Run IDs: [${steps}]`
-                    );
                     for (const step of steps) {
-                        core.info("step search: "+step)
                         if (idRegex.test(step)) {
                             core.info("found search: "+step)
 

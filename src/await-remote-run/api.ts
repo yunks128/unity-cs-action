@@ -181,6 +181,7 @@ export async function getWorkflowRunActiveJobUrl(
     runId: number
 ): Promise<string> {
     try {
+        core.info("looking up job "+runId)
         const response = await getWorkflowRunJobs(runId);
         const fetchedInProgressJobs = response.data.jobs.filter(
             (job) => job.status === "in_progress"
