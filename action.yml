@@ -13,6 +13,10 @@ inputs:
     description: 'U-CS eks metadata spec'
     required: false
     default: ''
+  eksrunner:
+    description: "workflow to run for eks deployments"
+    required: true
+    default: "deploy_eks_callable.yml"
 outputs:
   eksmeta:
     description: 'EKS metadata'
