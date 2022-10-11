@@ -8402,7 +8402,7 @@ async function runWF(owner, ref, repo, token, workflow, workflowTimeout) {
         () => getWorkflowRunIds(workflowId),
         WORKFLOW_FETCH_TIMEOUT_MS > timeoutMs ? timeoutMs : WORKFLOW_FETCH_TIMEOUT_MS
       );
-      core4.debug(
+      core4.info(
         `Attempting to get step names for Run IDs: [${workflowRunIds}]`
       );
       const idRegex = new RegExp(DISTINCT_ID);
