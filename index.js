@@ -13,7 +13,7 @@ try {
     console.log(`Found meta ${meta}!`);
     const [owner, repo] = "unity-sds/unity-cs-action".split("/");
     octokit = github.getOctokit(token)
-    const { data } = await octokit.request("POST /repos/{owner}/{repo}/issues", {
+    const { data } = octokit.request("POST /repos/{owner}/{repo}/issues", {
         owner,
         repo,
         title: "My test issue",
