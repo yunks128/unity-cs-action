@@ -9627,15 +9627,22 @@ var __webpack_exports__ = {};
 
 
 
-function spinUpEKS(meta) {
-    if(meta.hasOwnProperty("extensions")){
-        if(meta["extensions"].hasOwnProperty("kubernetes")){
+async function spinUpEKS(meta) {
+    if (meta.hasOwnProperty("extensions")) {
+        if (meta["extensions"].hasOwnProperty("kubernetes")) {
             console.log("call eks workflow")
+            let wf = await octokit.rest.actions.createWorkflowDispatch({
+                owner: "unity-sds",
+                repo: "unity-cs-infra",
+                workflow_id: "deploy_eks_callable.yml",
+                ref: "main",
+            });
+            console.log(wf)
         }
     } else {
         console.log("call eks workflow 2")
     }
-    
+
 }
 
 function spinUpProjects(meta, token) {
