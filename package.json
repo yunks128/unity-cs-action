@@ -27,6 +27,7 @@
   "dependencies": {
     "@actions/core": "^1.10.0",
     "@actions/github": "^5.1.1",
+    "return-dispatch": "github:Codex-/return-dispatch",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

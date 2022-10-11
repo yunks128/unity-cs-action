@@ -1,28 +1,15 @@
 import * as core from "@actions/core";
-import { v4 as uuid } from "uuid";
-import * as github from "@actions/github";
 import {MetaObject} from "./meta";
-
+import {runWF} from "./return-dispatch/main"
+import {runWait} from "./await-remote-run/main";
+import {ActionOutputs} from "./return-dispatch/action";
 async function spinUpEKS(meta: MetaObject, token: string) {
-    let octokit = github.getOctokit(token)
     if (meta.hasOwnProperty("extensions")) {
         if (meta["extensions"].hasOwnProperty("kubernetes")) {
             console.log("call eks workflow")
-            let wf = await octokit.rest.actions.createWorkflowDispatch({
-                owner: "unity-sds",
-                repo: "unity-cs-infra",
-                workflow_id: "deploy_eks.yml",
-                ref: "main",
-                inputs:{
-                    "KEY":core.getInput('KEY'),
-                    "SECRET":core.getInput('SECRET'),
-                    "TOKEN":core.getInput('TOKEN'),
-                    "OWNER":"",
-                    "PROJECTNAME":"",
-
-                }
-            });
-            console.log(wf)
+            let id : ActionOutputs.runId = await runWF("unity-sds", "main", "unity-cs-infra", token, "deploy_eks.yml", 3600)
+            await runWait("unity-sds", 5000, "unity-cs-infra", parseInt(id), 3600,token)
+            console.log("wf id: "+id)
         }
     } else {
         console.log("call eks workflow 2")
