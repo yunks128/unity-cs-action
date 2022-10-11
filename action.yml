@@ -21,5 +21,5 @@ outputs:
   eksmeta:
     description: 'EKS metadata'
 runs:
-  using: 'node16'
-  main: 'dist/index.mjs'
+  using: node16
+  main: dist/index.js
