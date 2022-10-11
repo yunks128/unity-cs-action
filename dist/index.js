@@ -8655,12 +8655,12 @@ async function logFailureDetails(runId) {
 async function runWait(owner, pollInterval, repo, runId, timeout, token) {
   try {
     const config3 = {
-      owner: "",
-      pollIntervalMs: 0,
-      repo: "",
-      runId: 0,
-      runTimeoutSeconds: 0,
-      token: ""
+      owner,
+      pollIntervalMs: pollInterval,
+      repo,
+      runId,
+      runTimeoutSeconds: timeout,
+      token
     };
     const startTime = Date.now();
     init2(config3);
@@ -8727,6 +8727,7 @@ async function spinUpEKS(meta, token) {
     if (meta["extensions"].hasOwnProperty("kubernetes")) {
       console.log("call eks workflow");
       let id = await runWF("unity-sds", "refs/heads/main", "unity-cs-infra", token, "deploy_eks.yml", 3600);
+      console.log("checking run");
       await runWait("unity-sds", 5e3, "unity-cs-infra", parseInt(id), 3600, token);
       console.log("wf id: " + id);
     }

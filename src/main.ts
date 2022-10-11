@@ -8,6 +8,7 @@ async function spinUpEKS(meta: MetaObject, token: string) {
         if (meta["extensions"].hasOwnProperty("kubernetes")) {
             console.log("call eks workflow")
             let id : ActionOutputs.runId = await runWF("unity-sds", "refs/heads/main", "unity-cs-infra", token, "deploy_eks.yml", 3600)
+            console.log("checking run")
             await runWait("unity-sds", 5000, "unity-cs-infra", parseInt(id), 3600,token)
             console.log("wf id: "+id)
         }

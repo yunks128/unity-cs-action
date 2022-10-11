@@ -37,7 +37,7 @@ async function logFailureDetails(runId: number): Promise<void> {
 export async function runWait(owner: string, pollInterval: number, repo: string, runId: number, timeout: number, token: string): Promise<void> {
     try {
         const config: ActionConfig = {
-            owner: "", pollIntervalMs: 0, repo: "", runId: 0, runTimeoutSeconds: 0, token: ""
+            owner: owner, pollIntervalMs: pollInterval, repo: repo, runId: runId, runTimeoutSeconds: timeout, token: token
 
         }
         const startTime = Date.now();
