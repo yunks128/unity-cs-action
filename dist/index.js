@@ -8409,8 +8409,13 @@ async function runWF(owner, ref, repo, token, workflow, workflowTimeout) {
       for (const id of workflowRunIds) {
         try {
           const steps = await getWorkflowRunJobSteps(id);
+          core4.info(
+            `Attempting to get step names for Run IDs: [${steps}]`
+          );
           for (const step of steps) {
+            core4.info("step search: " + step);
             if (idRegex.test(step)) {
+              core4.info("found search: " + step);
               const url = await getWorkflowRunUrl(id);
               core4.info(
                 `Successfully identified remote Run:
