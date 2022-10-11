@@ -189,10 +189,10 @@ var require_validate = __commonJS({
     function _interopRequireDefault(obj) {
       return obj && obj.__esModule ? obj : { default: obj };
     }
-    function validate(uuid) {
-      return typeof uuid === "string" && _regex.default.test(uuid);
+    function validate2(uuid2) {
+      return typeof uuid2 === "string" && _regex.default.test(uuid2);
     }
-    var _default = validate;
+    var _default = validate2;
     exports.default = _default;
   }
 });
@@ -213,14 +213,14 @@ var require_stringify = __commonJS({
     for (let i = 0; i < 256; ++i) {
       byteToHex.push((i + 256).toString(16).substr(1));
     }
-    function stringify(arr, offset = 0) {
-      const uuid = (byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + "-" + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + "-" + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + "-" + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + "-" + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]]).toLowerCase();
-      if (!(0, _validate.default)(uuid)) {
+    function stringify2(arr, offset = 0) {
+      const uuid2 = (byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + "-" + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + "-" + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + "-" + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + "-" + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]]).toLowerCase();
+      if (!(0, _validate.default)(uuid2)) {
         throw TypeError("Stringified UUID is invalid");
       }
-      return uuid;
+      return uuid2;
     }
-    var _default = stringify;
+    var _default = stringify2;
     exports.default = _default;
   }
 });
@@ -242,7 +242,7 @@ var require_v1 = __commonJS({
     var _clockseq;
     var _lastMSecs = 0;
     var _lastNSecs = 0;
-    function v1(options, buf, offset) {
+    function v12(options, buf, offset) {
       let i = buf && offset || 0;
       const b = buf || new Array(16);
       options = options || {};
@@ -290,7 +290,7 @@ var require_v1 = __commonJS({
       }
       return buf || (0, _stringify.default)(b);
     }
-    var _default = v1;
+    var _default = v12;
     exports.default = _default;
   }
 });
@@ -307,23 +307,23 @@ var require_parse = __commonJS({
     function _interopRequireDefault(obj) {
       return obj && obj.__esModule ? obj : { default: obj };
     }
-    function parse(uuid) {
-      if (!(0, _validate.default)(uuid)) {
+    function parse2(uuid2) {
+      if (!(0, _validate.default)(uuid2)) {
         throw TypeError("Invalid UUID");
       }
       let v;
       const arr = new Uint8Array(16);
-      arr[0] = (v = parseInt(uuid.slice(0, 8), 16)) >>> 24;
+      arr[0] = (v = parseInt(uuid2.slice(0, 8), 16)) >>> 24;
       arr[1] = v >>> 16 & 255;
       arr[2] = v >>> 8 & 255;
       arr[3] = v & 255;
-      arr[4] = (v = parseInt(uuid.slice(9, 13), 16)) >>> 8;
+      arr[4] = (v = parseInt(uuid2.slice(9, 13), 16)) >>> 8;
       arr[5] = v & 255;
-      arr[6] = (v = parseInt(uuid.slice(14, 18), 16)) >>> 8;
+      arr[6] = (v = parseInt(uuid2.slice(14, 18), 16)) >>> 8;
       arr[7] = v & 255;
-      arr[8] = (v = parseInt(uuid.slice(19, 23), 16)) >>> 8;
+      arr[8] = (v = parseInt(uuid2.slice(19, 23), 16)) >>> 8;
       arr[9] = v & 255;
-      arr[10] = (v = parseInt(uuid.slice(24, 36), 16)) / 1099511627776 & 255;
+      arr[10] = (v = parseInt(uuid2.slice(24, 36), 16)) / 1099511627776 & 255;
       arr[11] = v / 4294967296 & 255;
       arr[12] = v >>> 24 & 255;
       arr[13] = v >>> 16 & 255;
@@ -331,7 +331,7 @@ var require_parse = __commonJS({
       arr[15] = v & 255;
       return arr;
     }
-    var _default = parse;
+    var _default = parse2;
     exports.default = _default;
   }
 });
@@ -362,7 +362,7 @@ var require_v35 = __commonJS({
     exports.DNS = DNS;
     var URL2 = "6ba7b811-9dad-11d1-80b4-00c04fd430c8";
     exports.URL = URL2;
-    function _default(name, version, hashfunc) {
+    function _default(name, version2, hashfunc) {
       function generateUUID(value, namespace, buf, offset) {
         if (typeof value === "string") {
           value = stringToBytes(value);
@@ -377,7 +377,7 @@ var require_v35 = __commonJS({
         bytes.set(namespace);
         bytes.set(value, namespace.length);
         bytes = hashfunc(bytes);
-        bytes[6] = bytes[6] & 15 | version;
+        bytes[6] = bytes[6] & 15 | version2;
         bytes[8] = bytes[8] & 63 | 128;
         if (buf) {
           offset = offset || 0;
@@ -437,8 +437,8 @@ var require_v3 = __commonJS({
     function _interopRequireDefault(obj) {
       return obj && obj.__esModule ? obj : { default: obj };
     }
-    var v3 = (0, _v.default)("v3", 48, _md.default);
-    var _default = v3;
+    var v32 = (0, _v.default)("v3", 48, _md.default);
+    var _default = v32;
     exports.default = _default;
   }
 });
@@ -456,7 +456,7 @@ var require_v4 = __commonJS({
     function _interopRequireDefault(obj) {
       return obj && obj.__esModule ? obj : { default: obj };
     }
-    function v4(options, buf, offset) {
+    function v42(options, buf, offset) {
       options = options || {};
       const rnds = options.random || (options.rng || _rng.default)();
       rnds[6] = rnds[6] & 15 | 64;
@@ -470,7 +470,7 @@ var require_v4 = __commonJS({
       }
       return (0, _stringify.default)(rnds);
     }
-    var _default = v4;
+    var _default = v42;
     exports.default = _default;
   }
 });
@@ -513,8 +513,8 @@ var require_v5 = __commonJS({
     function _interopRequireDefault(obj) {
       return obj && obj.__esModule ? obj : { default: obj };
     }
-    var v5 = (0, _v.default)("v5", 80, _sha.default);
-    var _default = v5;
+    var v52 = (0, _v.default)("v5", 80, _sha.default);
+    var _default = v52;
     exports.default = _default;
   }
 });
@@ -544,13 +544,13 @@ var require_version = __commonJS({
     function _interopRequireDefault(obj) {
       return obj && obj.__esModule ? obj : { default: obj };
     }
-    function version(uuid) {
-      if (!(0, _validate.default)(uuid)) {
+    function version2(uuid2) {
+      if (!(0, _validate.default)(uuid2)) {
         throw TypeError("Invalid UUID");
       }
-      return parseInt(uuid.substr(14, 1), 16);
+      return parseInt(uuid2.substr(14, 1), 16);
     }
-    var _default = version;
+    var _default = version2;
     exports.default = _default;
   }
 });
@@ -856,7 +856,7 @@ var require_tunnel = __commonJS({
         connectOptions.headers = connectOptions.headers || {};
         connectOptions.headers["Proxy-Authorization"] = "Basic " + new Buffer(connectOptions.proxyAuth).toString("base64");
       }
-      debug("making CONNECT request");
+      debug7("making CONNECT request");
       var connectReq = self.request(connectOptions);
       connectReq.useChunkedEncodingByDefault = false;
       connectReq.once("response", onResponse);
@@ -876,40 +876,40 @@ var require_tunnel = __commonJS({
         connectReq.removeAllListeners();
         socket.removeAllListeners();
         if (res.statusCode !== 200) {
-          debug(
+          debug7(
             "tunneling socket could not be established, statusCode=%d",
             res.statusCode
           );
           socket.destroy();
-          var error = new Error("tunneling socket could not be established, statusCode=" + res.statusCode);
-          error.code = "ECONNRESET";
-          options.request.emit("error", error);
+          var error6 = new Error("tunneling socket could not be established, statusCode=" + res.statusCode);
+          error6.code = "ECONNRESET";
+          options.request.emit("error", error6);
           self.removeSocket(placeholder);
           return;
         }
         if (head.length > 0) {
-          debug("got illegal response body from proxy");
+          debug7("got illegal response body from proxy");
           socket.destroy();
-          var error = new Error("got illegal response body from proxy");
-          error.code = "ECONNRESET";
-          options.request.emit("error", error);
+          var error6 = new Error("got illegal response body from proxy");
+          error6.code = "ECONNRESET";
+          options.request.emit("error", error6);
           self.removeSocket(placeholder);
           return;
         }
-        debug("tunneling connection has established");
+        debug7("tunneling connection has established");
         self.sockets[self.sockets.indexOf(placeholder)] = socket;
         return cb(socket);
       }
       function onError(cause) {
         connectReq.removeAllListeners();
-        debug(
+        debug7(
           "tunneling socket could not be established, cause=%s\n",
           cause.message,
           cause.stack
         );
-        var error = new Error("tunneling socket could not be established, cause=" + cause.message);
-        error.code = "ECONNRESET";
-        options.request.emit("error", error);
+        var error6 = new Error("tunneling socket could not be established, cause=" + cause.message);
+        error6.code = "ECONNRESET";
+        options.request.emit("error", error6);
         self.removeSocket(placeholder);
       }
     };
@@ -964,9 +964,9 @@ var require_tunnel = __commonJS({
       }
       return target;
     }
-    var debug;
+    var debug7;
     if (process.env.NODE_DEBUG && /\btunnel\b/.test(process.env.NODE_DEBUG)) {
-      debug = function() {
+      debug7 = function() {
         var args = Array.prototype.slice.call(arguments);
         if (typeof args[0] === "string") {
           args[0] = "TUNNEL: " + args[0];
@@ -976,10 +976,10 @@ var require_tunnel = __commonJS({
         console.error.apply(console, args);
       };
     } else {
-      debug = function() {
+      debug7 = function() {
       };
     }
-    exports.debug = debug;
+    exports.debug = debug7;
   }
 });
 
@@ -1265,12 +1265,12 @@ var require_lib = __commonJS({
             throw new Error("Client has already been disposed.");
           }
           const parsedUrl = new URL(requestUrl);
-          let info = this._prepareRequest(verb, parsedUrl, headers);
+          let info4 = this._prepareRequest(verb, parsedUrl, headers);
           const maxTries = this._allowRetries && RetryableHttpVerbs.includes(verb) ? this._maxRetries + 1 : 1;
           let numTries = 0;
           let response;
           do {
-            response = yield this.requestRaw(info, data);
+            response = yield this.requestRaw(info4, data);
             if (response && response.message && response.message.statusCode === HttpCodes.Unauthorized) {
               let authenticationHandler;
               for (const handler of this.handlers) {
@@ -1280,7 +1280,7 @@ var require_lib = __commonJS({
                 }
               }
               if (authenticationHandler) {
-                return authenticationHandler.handleAuthentication(this, info, data);
+                return authenticationHandler.handleAuthentication(this, info4, data);
               } else {
                 return response;
               }
@@ -1303,8 +1303,8 @@ var require_lib = __commonJS({
                   }
                 }
               }
-              info = this._prepareRequest(verb, parsedRedirectUrl, headers);
-              response = yield this.requestRaw(info, data);
+              info4 = this._prepareRequest(verb, parsedRedirectUrl, headers);
+              response = yield this.requestRaw(info4, data);
               redirectsRemaining--;
             }
             if (!response.message.statusCode || !HttpResponseRetryCodes.includes(response.message.statusCode)) {
@@ -1325,7 +1325,7 @@ var require_lib = __commonJS({
         }
         this._disposed = true;
       }
-      requestRaw(info, data) {
+      requestRaw(info4, data) {
         return __awaiter(this, void 0, void 0, function* () {
           return new Promise((resolve, reject) => {
             function callbackForResult(err, res) {
@@ -1337,16 +1337,16 @@ var require_lib = __commonJS({
                 resolve(res);
               }
             }
-            this.requestRawWithCallback(info, data, callbackForResult);
+            this.requestRawWithCallback(info4, data, callbackForResult);
           });
         });
       }
-      requestRawWithCallback(info, data, onResult) {
+      requestRawWithCallback(info4, data, onResult) {
         if (typeof data === "string") {
-          if (!info.options.headers) {
-            info.options.headers = {};
+          if (!info4.options.headers) {
+            info4.options.headers = {};
           }
-          info.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
+          info4.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
         }
         let callbackCalled = false;
         function handleResult(err, res) {
@@ -1355,7 +1355,7 @@ var require_lib = __commonJS({
             onResult(err, res);
           }
         }
-        const req = info.httpModule.request(info.options, (msg) => {
+        const req = info4.httpModule.request(info4.options, (msg) => {
           const res = new HttpClientResponse(msg);
           handleResult(void 0, res);
         });
@@ -1367,7 +1367,7 @@ var require_lib = __commonJS({
           if (socket) {
             socket.end();
           }
-          handleResult(new Error(`Request timeout: ${info.options.path}`));
+          handleResult(new Error(`Request timeout: ${info4.options.path}`));
         });
         req.on("error", function(err) {
           handleResult(err);
@@ -1389,27 +1389,27 @@ var require_lib = __commonJS({
         return this._getAgent(parsedUrl);
       }
       _prepareRequest(method, requestUrl, headers) {
-        const info = {};
-        info.parsedUrl = requestUrl;
-        const usingSsl = info.parsedUrl.protocol === "https:";
-        info.httpModule = usingSsl ? https : http;
+        const info4 = {};
+        info4.parsedUrl = requestUrl;
+        const usingSsl = info4.parsedUrl.protocol === "https:";
+        info4.httpModule = usingSsl ? https : http;
         const defaultPort = usingSsl ? 443 : 80;
-        info.options = {};
-        info.options.host = info.parsedUrl.hostname;
-        info.options.port = info.parsedUrl.port ? parseInt(info.parsedUrl.port) : defaultPort;
-        info.options.path = (info.parsedUrl.pathname || "") + (info.parsedUrl.search || "");
-        info.options.method = method;
-        info.options.headers = this._mergeHeaders(headers);
+        info4.options = {};
+        info4.options.host = info4.parsedUrl.hostname;
+        info4.options.port = info4.parsedUrl.port ? parseInt(info4.parsedUrl.port) : defaultPort;
+        info4.options.path = (info4.parsedUrl.pathname || "") + (info4.parsedUrl.search || "");
+        info4.options.method = method;
+        info4.options.headers = this._mergeHeaders(headers);
         if (this.userAgent != null) {
-          info.options.headers["user-agent"] = this.userAgent;
+          info4.options.headers["user-agent"] = this.userAgent;
         }
-        info.options.agent = this._getAgent(info.parsedUrl);
+        info4.options.agent = this._getAgent(info4.parsedUrl);
         if (this.handlers) {
           for (const handler of this.handlers) {
-            handler.prepareRequest(info.options);
+            handler.prepareRequest(info4.options);
           }
         }
-        return info;
+        return info4;
       }
       _mergeHeaders(headers) {
         if (this.requestOptions && this.requestOptions.headers) {
@@ -1701,12 +1701,12 @@ var require_oidc_utils = __commonJS({
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
           const httpclient = OidcClient.createHttpClient();
-          const res = yield httpclient.getJson(id_token_url).catch((error) => {
+          const res = yield httpclient.getJson(id_token_url).catch((error6) => {
             throw new Error(`Failed to get ID Token. 
  
-        Error Code : ${error.statusCode}
+        Error Code : ${error6.statusCode}
  
-        Error Message: ${error.result.message}`);
+        Error Message: ${error6.result.message}`);
           });
           const id_token = (_a = res.result) === null || _a === void 0 ? void 0 : _a.value;
           if (!id_token) {
@@ -1727,8 +1727,8 @@ var require_oidc_utils = __commonJS({
             const id_token = yield OidcClient.getCall(id_token_url);
             core_1.setSecret(id_token);
             return id_token;
-          } catch (error) {
-            throw new Error(`Error message: ${error.message}`);
+          } catch (error6) {
+            throw new Error(`Error message: ${error6.message}`);
           }
         });
       }
@@ -2048,7 +2048,7 @@ var require_core = __commonJS({
       process.env["PATH"] = `${inputPath}${path.delimiter}${process.env["PATH"]}`;
     }
     exports.addPath = addPath;
-    function getInput2(name, options) {
+    function getInput4(name, options) {
       const val = process.env[`INPUT_${name.replace(/ /g, "_").toUpperCase()}`] || "";
       if (options && options.required && !val) {
         throw new Error(`Input required and not supplied: ${name}`);
@@ -2058,9 +2058,9 @@ var require_core = __commonJS({
       }
       return val.trim();
     }
-    exports.getInput = getInput2;
+    exports.getInput = getInput4;
     function getMultilineInput(name, options) {
-      const inputs = getInput2(name, options).split("\n").filter((x) => x !== "");
+      const inputs = getInput4(name, options).split("\n").filter((x) => x !== "");
       if (options && options.trimWhitespace === false) {
         return inputs;
       }
@@ -2070,7 +2070,7 @@ var require_core = __commonJS({
     function getBooleanInput(name, options) {
       const trueValue = ["true", "True", "TRUE"];
       const falseValue = ["false", "False", "FALSE"];
-      const val = getInput2(name, options);
+      const val = getInput4(name, options);
       if (trueValue.includes(val))
         return true;
       if (falseValue.includes(val))
@@ -2092,35 +2092,35 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issue("echo", enabled ? "on" : "off");
     }
     exports.setCommandEcho = setCommandEcho;
-    function setFailed2(message) {
+    function setFailed4(message) {
       process.exitCode = ExitCode.Failure;
-      error(message);
+      error6(message);
     }
-    exports.setFailed = setFailed2;
+    exports.setFailed = setFailed4;
     function isDebug() {
       return process.env["RUNNER_DEBUG"] === "1";
     }
     exports.isDebug = isDebug;
-    function debug(message) {
+    function debug7(message) {
       command_1.issueCommand("debug", {}, message);
     }
-    exports.debug = debug;
-    function error(message, properties = {}) {
+    exports.debug = debug7;
+    function error6(message, properties = {}) {
       command_1.issueCommand("error", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
-    exports.error = error;
-    function warning(message, properties = {}) {
+    exports.error = error6;
+    function warning5(message, properties = {}) {
       command_1.issueCommand("warning", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
-    exports.warning = warning;
+    exports.warning = warning5;
     function notice(message, properties = {}) {
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports.notice = notice;
-    function info(message) {
+    function info4(message) {
       process.stdout.write(message + os.EOL);
     }
-    exports.info = info;
+    exports.info = info4;
     function startGroup(name) {
       command_1.issue("group", name);
     }
@@ -2178,6 +2178,525 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
     Object.defineProperty(exports, "toPlatformPath", { enumerable: true, get: function() {
       return path_utils_1.toPlatformPath;
     } });
+  }
+});
+
+// node_modules/uuid/dist/rng.js
+var require_rng2 = __commonJS({
+  "node_modules/uuid/dist/rng.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    exports.default = rng;
+    var _crypto = _interopRequireDefault(require("crypto"));
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+    var rnds8Pool = new Uint8Array(256);
+    var poolPtr = rnds8Pool.length;
+    function rng() {
+      if (poolPtr > rnds8Pool.length - 16) {
+        _crypto.default.randomFillSync(rnds8Pool);
+        poolPtr = 0;
+      }
+      return rnds8Pool.slice(poolPtr, poolPtr += 16);
+    }
+  }
+});
+
+// node_modules/uuid/dist/regex.js
+var require_regex2 = __commonJS({
+  "node_modules/uuid/dist/regex.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    exports.default = void 0;
+    var _default = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i;
+    exports.default = _default;
+  }
+});
+
+// node_modules/uuid/dist/validate.js
+var require_validate2 = __commonJS({
+  "node_modules/uuid/dist/validate.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    exports.default = void 0;
+    var _regex = _interopRequireDefault(require_regex2());
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+    function validate2(uuid2) {
+      return typeof uuid2 === "string" && _regex.default.test(uuid2);
+    }
+    var _default = validate2;
+    exports.default = _default;
+  }
+});
+
+// node_modules/uuid/dist/stringify.js
+var require_stringify2 = __commonJS({
+  "node_modules/uuid/dist/stringify.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    exports.default = void 0;
+    exports.unsafeStringify = unsafeStringify;
+    var _validate = _interopRequireDefault(require_validate2());
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+    var byteToHex = [];
+    for (let i = 0; i < 256; ++i) {
+      byteToHex.push((i + 256).toString(16).slice(1));
+    }
+    function unsafeStringify(arr, offset = 0) {
+      return (byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + "-" + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + "-" + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + "-" + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + "-" + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]]).toLowerCase();
+    }
+    function stringify2(arr, offset = 0) {
+      const uuid2 = unsafeStringify(arr, offset);
+      if (!(0, _validate.default)(uuid2)) {
+        throw TypeError("Stringified UUID is invalid");
+      }
+      return uuid2;
+    }
+    var _default = stringify2;
+    exports.default = _default;
+  }
+});
+
+// node_modules/uuid/dist/v1.js
+var require_v12 = __commonJS({
+  "node_modules/uuid/dist/v1.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    exports.default = void 0;
+    var _rng = _interopRequireDefault(require_rng2());
+    var _stringify = require_stringify2();
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+    var _nodeId;
+    var _clockseq;
+    var _lastMSecs = 0;
+    var _lastNSecs = 0;
+    function v12(options, buf, offset) {
+      let i = buf && offset || 0;
+      const b = buf || new Array(16);
+      options = options || {};
+      let node = options.node || _nodeId;
+      let clockseq = options.clockseq !== void 0 ? options.clockseq : _clockseq;
+      if (node == null || clockseq == null) {
+        const seedBytes = options.random || (options.rng || _rng.default)();
+        if (node == null) {
+          node = _nodeId = [seedBytes[0] | 1, seedBytes[1], seedBytes[2], seedBytes[3], seedBytes[4], seedBytes[5]];
+        }
+        if (clockseq == null) {
+          clockseq = _clockseq = (seedBytes[6] << 8 | seedBytes[7]) & 16383;
+        }
+      }
+      let msecs = options.msecs !== void 0 ? options.msecs : Date.now();
+      let nsecs = options.nsecs !== void 0 ? options.nsecs : _lastNSecs + 1;
+      const dt = msecs - _lastMSecs + (nsecs - _lastNSecs) / 1e4;
+      if (dt < 0 && options.clockseq === void 0) {
+        clockseq = clockseq + 1 & 16383;
+      }
+      if ((dt < 0 || msecs > _lastMSecs) && options.nsecs === void 0) {
+        nsecs = 0;
+      }
+      if (nsecs >= 1e4) {
+        throw new Error("uuid.v1(): Can't create more than 10M uuids/sec");
+      }
+      _lastMSecs = msecs;
+      _lastNSecs = nsecs;
+      _clockseq = clockseq;
+      msecs += 122192928e5;
+      const tl = ((msecs & 268435455) * 1e4 + nsecs) % 4294967296;
+      b[i++] = tl >>> 24 & 255;
+      b[i++] = tl >>> 16 & 255;
+      b[i++] = tl >>> 8 & 255;
+      b[i++] = tl & 255;
+      const tmh = msecs / 4294967296 * 1e4 & 268435455;
+      b[i++] = tmh >>> 8 & 255;
+      b[i++] = tmh & 255;
+      b[i++] = tmh >>> 24 & 15 | 16;
+      b[i++] = tmh >>> 16 & 255;
+      b[i++] = clockseq >>> 8 | 128;
+      b[i++] = clockseq & 255;
+      for (let n = 0; n < 6; ++n) {
+        b[i + n] = node[n];
+      }
+      return buf || (0, _stringify.unsafeStringify)(b);
+    }
+    var _default = v12;
+    exports.default = _default;
+  }
+});
+
+// node_modules/uuid/dist/parse.js
+var require_parse2 = __commonJS({
+  "node_modules/uuid/dist/parse.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    exports.default = void 0;
+    var _validate = _interopRequireDefault(require_validate2());
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+    function parse2(uuid2) {
+      if (!(0, _validate.default)(uuid2)) {
+        throw TypeError("Invalid UUID");
+      }
+      let v;
+      const arr = new Uint8Array(16);
+      arr[0] = (v = parseInt(uuid2.slice(0, 8), 16)) >>> 24;
+      arr[1] = v >>> 16 & 255;
+      arr[2] = v >>> 8 & 255;
+      arr[3] = v & 255;
+      arr[4] = (v = parseInt(uuid2.slice(9, 13), 16)) >>> 8;
+      arr[5] = v & 255;
+      arr[6] = (v = parseInt(uuid2.slice(14, 18), 16)) >>> 8;
+      arr[7] = v & 255;
+      arr[8] = (v = parseInt(uuid2.slice(19, 23), 16)) >>> 8;
+      arr[9] = v & 255;
+      arr[10] = (v = parseInt(uuid2.slice(24, 36), 16)) / 1099511627776 & 255;
+      arr[11] = v / 4294967296 & 255;
+      arr[12] = v >>> 24 & 255;
+      arr[13] = v >>> 16 & 255;
+      arr[14] = v >>> 8 & 255;
+      arr[15] = v & 255;
+      return arr;
+    }
+    var _default = parse2;
+    exports.default = _default;
+  }
+});
+
+// node_modules/uuid/dist/v35.js
+var require_v352 = __commonJS({
+  "node_modules/uuid/dist/v35.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    exports.URL = exports.DNS = void 0;
+    exports.default = v35;
+    var _stringify = require_stringify2();
+    var _parse = _interopRequireDefault(require_parse2());
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+    function stringToBytes(str) {
+      str = unescape(encodeURIComponent(str));
+      const bytes = [];
+      for (let i = 0; i < str.length; ++i) {
+        bytes.push(str.charCodeAt(i));
+      }
+      return bytes;
+    }
+    var DNS = "6ba7b810-9dad-11d1-80b4-00c04fd430c8";
+    exports.DNS = DNS;
+    var URL2 = "6ba7b811-9dad-11d1-80b4-00c04fd430c8";
+    exports.URL = URL2;
+    function v35(name, version2, hashfunc) {
+      function generateUUID(value, namespace, buf, offset) {
+        var _namespace;
+        if (typeof value === "string") {
+          value = stringToBytes(value);
+        }
+        if (typeof namespace === "string") {
+          namespace = (0, _parse.default)(namespace);
+        }
+        if (((_namespace = namespace) === null || _namespace === void 0 ? void 0 : _namespace.length) !== 16) {
+          throw TypeError("Namespace must be array-like (16 iterable integer values, 0-255)");
+        }
+        let bytes = new Uint8Array(16 + value.length);
+        bytes.set(namespace);
+        bytes.set(value, namespace.length);
+        bytes = hashfunc(bytes);
+        bytes[6] = bytes[6] & 15 | version2;
+        bytes[8] = bytes[8] & 63 | 128;
+        if (buf) {
+          offset = offset || 0;
+          for (let i = 0; i < 16; ++i) {
+            buf[offset + i] = bytes[i];
+          }
+          return buf;
+        }
+        return (0, _stringify.unsafeStringify)(bytes);
+      }
+      try {
+        generateUUID.name = name;
+      } catch (err) {
+      }
+      generateUUID.DNS = DNS;
+      generateUUID.URL = URL2;
+      return generateUUID;
+    }
+  }
+});
+
+// node_modules/uuid/dist/md5.js
+var require_md52 = __commonJS({
+  "node_modules/uuid/dist/md5.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    exports.default = void 0;
+    var _crypto = _interopRequireDefault(require("crypto"));
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+    function md5(bytes) {
+      if (Array.isArray(bytes)) {
+        bytes = Buffer.from(bytes);
+      } else if (typeof bytes === "string") {
+        bytes = Buffer.from(bytes, "utf8");
+      }
+      return _crypto.default.createHash("md5").update(bytes).digest();
+    }
+    var _default = md5;
+    exports.default = _default;
+  }
+});
+
+// node_modules/uuid/dist/v3.js
+var require_v32 = __commonJS({
+  "node_modules/uuid/dist/v3.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    exports.default = void 0;
+    var _v = _interopRequireDefault(require_v352());
+    var _md = _interopRequireDefault(require_md52());
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+    var v32 = (0, _v.default)("v3", 48, _md.default);
+    var _default = v32;
+    exports.default = _default;
+  }
+});
+
+// node_modules/uuid/dist/native.js
+var require_native = __commonJS({
+  "node_modules/uuid/dist/native.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    exports.default = void 0;
+    var _crypto = _interopRequireDefault(require("crypto"));
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+    var _default = {
+      randomUUID: _crypto.default.randomUUID
+    };
+    exports.default = _default;
+  }
+});
+
+// node_modules/uuid/dist/v4.js
+var require_v42 = __commonJS({
+  "node_modules/uuid/dist/v4.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    exports.default = void 0;
+    var _native = _interopRequireDefault(require_native());
+    var _rng = _interopRequireDefault(require_rng2());
+    var _stringify = require_stringify2();
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+    function v42(options, buf, offset) {
+      if (_native.default.randomUUID && !buf && !options) {
+        return _native.default.randomUUID();
+      }
+      options = options || {};
+      const rnds = options.random || (options.rng || _rng.default)();
+      rnds[6] = rnds[6] & 15 | 64;
+      rnds[8] = rnds[8] & 63 | 128;
+      if (buf) {
+        offset = offset || 0;
+        for (let i = 0; i < 16; ++i) {
+          buf[offset + i] = rnds[i];
+        }
+        return buf;
+      }
+      return (0, _stringify.unsafeStringify)(rnds);
+    }
+    var _default = v42;
+    exports.default = _default;
+  }
+});
+
+// node_modules/uuid/dist/sha1.js
+var require_sha12 = __commonJS({
+  "node_modules/uuid/dist/sha1.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    exports.default = void 0;
+    var _crypto = _interopRequireDefault(require("crypto"));
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+    function sha1(bytes) {
+      if (Array.isArray(bytes)) {
+        bytes = Buffer.from(bytes);
+      } else if (typeof bytes === "string") {
+        bytes = Buffer.from(bytes, "utf8");
+      }
+      return _crypto.default.createHash("sha1").update(bytes).digest();
+    }
+    var _default = sha1;
+    exports.default = _default;
+  }
+});
+
+// node_modules/uuid/dist/v5.js
+var require_v52 = __commonJS({
+  "node_modules/uuid/dist/v5.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    exports.default = void 0;
+    var _v = _interopRequireDefault(require_v352());
+    var _sha = _interopRequireDefault(require_sha12());
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+    var v52 = (0, _v.default)("v5", 80, _sha.default);
+    var _default = v52;
+    exports.default = _default;
+  }
+});
+
+// node_modules/uuid/dist/nil.js
+var require_nil2 = __commonJS({
+  "node_modules/uuid/dist/nil.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    exports.default = void 0;
+    var _default = "00000000-0000-0000-0000-000000000000";
+    exports.default = _default;
+  }
+});
+
+// node_modules/uuid/dist/version.js
+var require_version2 = __commonJS({
+  "node_modules/uuid/dist/version.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    exports.default = void 0;
+    var _validate = _interopRequireDefault(require_validate2());
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+    function version2(uuid2) {
+      if (!(0, _validate.default)(uuid2)) {
+        throw TypeError("Invalid UUID");
+      }
+      return parseInt(uuid2.slice(14, 15), 16);
+    }
+    var _default = version2;
+    exports.default = _default;
+  }
+});
+
+// node_modules/uuid/dist/index.js
+var require_dist2 = __commonJS({
+  "node_modules/uuid/dist/index.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    Object.defineProperty(exports, "NIL", {
+      enumerable: true,
+      get: function() {
+        return _nil.default;
+      }
+    });
+    Object.defineProperty(exports, "parse", {
+      enumerable: true,
+      get: function() {
+        return _parse.default;
+      }
+    });
+    Object.defineProperty(exports, "stringify", {
+      enumerable: true,
+      get: function() {
+        return _stringify.default;
+      }
+    });
+    Object.defineProperty(exports, "v1", {
+      enumerable: true,
+      get: function() {
+        return _v.default;
+      }
+    });
+    Object.defineProperty(exports, "v3", {
+      enumerable: true,
+      get: function() {
+        return _v2.default;
+      }
+    });
+    Object.defineProperty(exports, "v4", {
+      enumerable: true,
+      get: function() {
+        return _v3.default;
+      }
+    });
+    Object.defineProperty(exports, "v5", {
+      enumerable: true,
+      get: function() {
+        return _v4.default;
+      }
+    });
+    Object.defineProperty(exports, "validate", {
+      enumerable: true,
+      get: function() {
+        return _validate.default;
+      }
+    });
+    Object.defineProperty(exports, "version", {
+      enumerable: true,
+      get: function() {
+        return _version.default;
+      }
+    });
+    var _v = _interopRequireDefault(require_v12());
+    var _v2 = _interopRequireDefault(require_v32());
+    var _v3 = _interopRequireDefault(require_v42());
+    var _v4 = _interopRequireDefault(require_v52());
+    var _nil = _interopRequireDefault(require_nil2());
+    var _version = _interopRequireDefault(require_version2());
+    var _validate = _interopRequireDefault(require_validate2());
+    var _stringify = _interopRequireDefault(require_stringify2());
+    var _parse = _interopRequireDefault(require_parse2());
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
   }
 });
 
@@ -2365,8 +2884,8 @@ var require_add = __commonJS({
       }
       if (kind === "error") {
         hook = function(method, options) {
-          return Promise.resolve().then(method.bind(null, options)).catch(function(error) {
-            return orig(error, options);
+          return Promise.resolve().then(method.bind(null, options)).catch(function(error6) {
+            return orig(error6, options);
           });
         };
       }
@@ -2692,7 +3211,7 @@ var require_dist_node2 = __commonJS({
         }
       });
     }
-    function parse(options) {
+    function parse2(options) {
       let method = options.method.toUpperCase();
       let url = (options.url || "/").replace(/:([a-z]\w+)/g, "{$1}");
       let headers = Object.assign({}, options.headers);
@@ -2748,7 +3267,7 @@ var require_dist_node2 = __commonJS({
       } : null);
     }
     function endpointWithDefaults(defaults, route, options) {
-      return parse(merge(defaults, route, options));
+      return parse2(merge(defaults, route, options));
     }
     function withDefaults(oldDefaults, newDefaults) {
       const DEFAULTS2 = merge(oldDefaults, newDefaults);
@@ -2757,7 +3276,7 @@ var require_dist_node2 = __commonJS({
         DEFAULTS: DEFAULTS2,
         defaults: withDefaults.bind(null, DEFAULTS2),
         merge: merge.bind(null, DEFAULTS2),
-        parse
+        parse: parse2
       });
     }
     var VERSION = "6.0.12";
@@ -3053,21 +3572,21 @@ var require_tr46 = __commonJS({
         label = punycode.toUnicode(label);
         processing_option = PROCESSING_OPTIONS.NONTRANSITIONAL;
       }
-      var error = false;
+      var error6 = false;
       if (normalize(label) !== label || label[3] === "-" && label[4] === "-" || label[0] === "-" || label[label.length - 1] === "-" || label.indexOf(".") !== -1 || label.search(combiningMarksRegex) === 0) {
-        error = true;
+        error6 = true;
       }
       var len = countSymbols(label);
       for (var i = 0; i < len; ++i) {
         var status = findStatus(label.codePointAt(i));
         if (processing === PROCESSING_OPTIONS.TRANSITIONAL && status[1] !== "valid" || processing === PROCESSING_OPTIONS.NONTRANSITIONAL && status[1] !== "valid" && status[1] !== "deviation") {
-          error = true;
+          error6 = true;
           break;
         }
       }
       return {
         label,
-        error
+        error: error6
       };
     }
     function processing(domain_name, useSTD3, processing_option) {
@@ -4717,8 +5236,8 @@ var require_lib3 = __commonJS({
       this.timeout = timeout;
       if (body instanceof Stream) {
         body.on("error", function(err) {
-          const error = err.name === "AbortError" ? err : new FetchError(`Invalid response body while trying to fetch ${_this.url}: ${err.message}`, "system", err);
-          _this[INTERNALS].error = error;
+          const error6 = err.name === "AbortError" ? err : new FetchError(`Invalid response body while trying to fetch ${_this.url}: ${err.message}`, "system", err);
+          _this[INTERNALS].error = error6;
         });
       }
     }
@@ -4996,10 +5515,10 @@ var require_lib3 = __commonJS({
     var MAP = Symbol("map");
     var Headers = class {
       constructor() {
-        let init = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : void 0;
+        let init3 = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : void 0;
         this[MAP] = /* @__PURE__ */ Object.create(null);
-        if (init instanceof Headers) {
-          const rawHeaders = init.raw();
+        if (init3 instanceof Headers) {
+          const rawHeaders = init3.raw();
           const headerNames = Object.keys(rawHeaders);
           for (const headerName of headerNames) {
             for (const value of rawHeaders[headerName]) {
@@ -5008,16 +5527,16 @@ var require_lib3 = __commonJS({
           }
           return;
         }
-        if (init == null)
+        if (init3 == null)
           ;
-        else if (typeof init === "object") {
-          const method = init[Symbol.iterator];
+        else if (typeof init3 === "object") {
+          const method = init3[Symbol.iterator];
           if (method != null) {
             if (typeof method !== "function") {
               throw new TypeError("Header pairs must be iterable");
             }
             const pairs = [];
-            for (const pair of init) {
+            for (const pair of init3) {
               if (typeof pair !== "object" || typeof pair[Symbol.iterator] !== "function") {
                 throw new TypeError("Each header pair must be iterable");
               }
@@ -5030,8 +5549,8 @@ var require_lib3 = __commonJS({
               this.append(pair[0], pair[1]);
             }
           } else {
-            for (const key of Object.keys(init)) {
-              const value = init[key];
+            for (const key of Object.keys(init3)) {
+              const value = init3[key];
               this.append(key, value);
             }
           }
@@ -5292,7 +5811,7 @@ var require_lib3 = __commonJS({
     }
     var Request = class {
       constructor(input) {
-        let init = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
+        let init3 = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
         let parsedURL;
         if (!isRequest(input)) {
           if (input && input.href) {
@@ -5304,17 +5823,17 @@ var require_lib3 = __commonJS({
         } else {
           parsedURL = parseURL(input.url);
         }
-        let method = init.method || input.method || "GET";
+        let method = init3.method || input.method || "GET";
         method = method.toUpperCase();
-        if ((init.body != null || isRequest(input) && input.body !== null) && (method === "GET" || method === "HEAD")) {
+        if ((init3.body != null || isRequest(input) && input.body !== null) && (method === "GET" || method === "HEAD")) {
           throw new TypeError("Request with GET/HEAD method cannot have body");
         }
-        let inputBody = init.body != null ? init.body : isRequest(input) && input.body !== null ? clone(input) : null;
+        let inputBody = init3.body != null ? init3.body : isRequest(input) && input.body !== null ? clone(input) : null;
         Body.call(this, inputBody, {
-          timeout: init.timeout || input.timeout || 0,
-          size: init.size || input.size || 0
+          timeout: init3.timeout || input.timeout || 0,
+          size: init3.size || input.size || 0
         });
-        const headers = new Headers(init.headers || input.headers || {});
+        const headers = new Headers(init3.headers || input.headers || {});
         if (inputBody != null && !headers.has("Content-Type")) {
           const contentType = extractContentType(inputBody);
           if (contentType) {
@@ -5322,22 +5841,22 @@ var require_lib3 = __commonJS({
           }
         }
         let signal = isRequest(input) ? input.signal : null;
-        if ("signal" in init)
-          signal = init.signal;
+        if ("signal" in init3)
+          signal = init3.signal;
         if (signal != null && !isAbortSignal(signal)) {
           throw new TypeError("Expected signal to be an instanceof AbortSignal");
         }
         this[INTERNALS$2] = {
           method,
-          redirect: init.redirect || input.redirect || "follow",
+          redirect: init3.redirect || input.redirect || "follow",
           headers,
           parsedURL,
           signal
         };
-        this.follow = init.follow !== void 0 ? init.follow : input.follow !== void 0 ? input.follow : 20;
-        this.compress = init.compress !== void 0 ? init.compress : input.compress !== void 0 ? input.compress : true;
-        this.counter = init.counter || input.counter || 0;
-        this.agent = init.agent || input.agent;
+        this.follow = init3.follow !== void 0 ? init3.follow : input.follow !== void 0 ? input.follow : 20;
+        this.compress = init3.compress !== void 0 ? init3.compress : input.compress !== void 0 ? input.compress : true;
+        this.counter = init3.counter || input.counter || 0;
+        this.agent = init3.agent || input.agent;
       }
       get method() {
         return this[INTERNALS$2].method;
@@ -5448,14 +5967,14 @@ var require_lib3 = __commonJS({
         const signal = request.signal;
         let response = null;
         const abort = function abort2() {
-          let error = new AbortError("The user aborted a request.");
-          reject(error);
+          let error6 = new AbortError("The user aborted a request.");
+          reject(error6);
           if (request.body && request.body instanceof Stream.Readable) {
-            request.body.destroy(error);
+            request.body.destroy(error6);
           }
           if (!response || !response.body)
             return;
-          response.body.emit("error", error);
+          response.body.emit("error", error6);
         };
         if (signal && signal.aborted) {
           abort();
@@ -5850,7 +6369,7 @@ var require_dist_node5 = __commonJS({
         }
         if (status >= 400) {
           const data = await getResponseData(response);
-          const error = new requestError.RequestError(toErrorMessage(data), status, {
+          const error6 = new requestError.RequestError(toErrorMessage(data), status, {
             response: {
               url,
               status,
@@ -5859,7 +6378,7 @@ var require_dist_node5 = __commonJS({
             },
             request: requestOptions
           });
-          throw error;
+          throw error6;
         }
         return getResponseData(response);
       }).then((data) => {
@@ -5869,10 +6388,10 @@ var require_dist_node5 = __commonJS({
           headers,
           data
         };
-      }).catch((error) => {
-        if (error instanceof requestError.RequestError)
-          throw error;
-        throw new requestError.RequestError(error.message, 500, {
+      }).catch((error6) => {
+        if (error6 instanceof requestError.RequestError)
+          throw error6;
+        throw new requestError.RequestError(error6.message, 500, {
           request: requestOptions
         });
       });
@@ -7205,7 +7724,7 @@ var require_dist_node9 = __commonJS({
       }
     };
     var VERSION = "5.16.2";
-    function endpointsToMethods(octokit, endpointsMap) {
+    function endpointsToMethods(octokit3, endpointsMap) {
       const newMethods = {};
       for (const [scope, endpoints] of Object.entries(endpointsMap)) {
         for (const [methodName, endpoint] of Object.entries(endpoints)) {
@@ -7220,16 +7739,16 @@ var require_dist_node9 = __commonJS({
           }
           const scopeMethods = newMethods[scope];
           if (decorations) {
-            scopeMethods[methodName] = decorate(octokit, scope, methodName, endpointDefaults, decorations);
+            scopeMethods[methodName] = decorate(octokit3, scope, methodName, endpointDefaults, decorations);
             continue;
           }
-          scopeMethods[methodName] = octokit.request.defaults(endpointDefaults);
+          scopeMethods[methodName] = octokit3.request.defaults(endpointDefaults);
         }
       }
       return newMethods;
     }
-    function decorate(octokit, scope, methodName, defaults, decorations) {
-      const requestWithDefaults = octokit.request.defaults(defaults);
+    function decorate(octokit3, scope, methodName, defaults, decorations) {
+      const requestWithDefaults = octokit3.request.defaults(defaults);
       function withDecorations(...args) {
         let options = requestWithDefaults.endpoint.merge(...args);
         if (decorations.mapToData) {
@@ -7241,16 +7760,16 @@ var require_dist_node9 = __commonJS({
         }
         if (decorations.renamed) {
           const [newScope, newMethodName] = decorations.renamed;
-          octokit.log.warn(`octokit.${scope}.${methodName}() has been renamed to octokit.${newScope}.${newMethodName}()`);
+          octokit3.log.warn(`octokit.${scope}.${methodName}() has been renamed to octokit.${newScope}.${newMethodName}()`);
         }
         if (decorations.deprecated) {
-          octokit.log.warn(decorations.deprecated);
+          octokit3.log.warn(decorations.deprecated);
         }
         if (decorations.renamedParameters) {
           const options2 = requestWithDefaults.endpoint.merge(...args);
           for (const [name, alias] of Object.entries(decorations.renamedParameters)) {
             if (name in options2) {
-              octokit.log.warn(`"${name}" parameter is deprecated for "octokit.${scope}.${methodName}()". Use "${alias}" instead`);
+              octokit3.log.warn(`"${name}" parameter is deprecated for "octokit.${scope}.${methodName}()". Use "${alias}" instead`);
               if (!(alias in options2)) {
                 options2[alias] = options2[name];
               }
@@ -7263,15 +7782,15 @@ var require_dist_node9 = __commonJS({
       }
       return Object.assign(withDecorations, requestWithDefaults);
     }
-    function restEndpointMethods(octokit) {
-      const api = endpointsToMethods(octokit, Endpoints);
+    function restEndpointMethods(octokit3) {
+      const api = endpointsToMethods(octokit3, Endpoints);
       return {
         rest: api
       };
     }
     restEndpointMethods.VERSION = VERSION;
-    function legacyRestEndpointMethods(octokit) {
-      const api = endpointsToMethods(octokit, Endpoints);
+    function legacyRestEndpointMethods(octokit3) {
+      const api = endpointsToMethods(octokit3, Endpoints);
       return _objectSpread2(_objectSpread2({}, api), {}, {
         rest: api
       });
@@ -7349,9 +7868,9 @@ var require_dist_node10 = __commonJS({
       response.data.total_count = totalCount;
       return response;
     }
-    function iterator(octokit, route, parameters) {
-      const options = typeof route === "function" ? route.endpoint(parameters) : octokit.request.endpoint(route, parameters);
-      const requestMethod = typeof route === "function" ? route : octokit.request;
+    function iterator(octokit3, route, parameters) {
+      const options = typeof route === "function" ? route.endpoint(parameters) : octokit3.request.endpoint(route, parameters);
+      const requestMethod = typeof route === "function" ? route : octokit3.request;
       const method = options.method;
       const headers = options.headers;
       let url = options.url;
@@ -7373,9 +7892,9 @@ var require_dist_node10 = __commonJS({
               return {
                 value: normalizedResponse
               };
-            } catch (error) {
-              if (error.status !== 409)
-                throw error;
+            } catch (error6) {
+              if (error6.status !== 409)
+                throw error6;
               url = "";
               return {
                 value: {
@@ -7389,14 +7908,14 @@ var require_dist_node10 = __commonJS({
         })
       };
     }
-    function paginate(octokit, route, parameters, mapFn) {
+    function paginate(octokit3, route, parameters, mapFn) {
       if (typeof parameters === "function") {
         mapFn = parameters;
         parameters = void 0;
       }
-      return gather(octokit, [], iterator(octokit, route, parameters)[Symbol.asyncIterator](), mapFn);
+      return gather(octokit3, [], iterator(octokit3, route, parameters)[Symbol.asyncIterator](), mapFn);
     }
-    function gather(octokit, results, iterator2, mapFn) {
+    function gather(octokit3, results, iterator2, mapFn) {
       return iterator2.next().then((result) => {
         if (result.done) {
           return results;
@@ -7409,7 +7928,7 @@ var require_dist_node10 = __commonJS({
         if (earlyExit) {
           return results;
         }
-        return gather(octokit, results, iterator2, mapFn);
+        return gather(octokit3, results, iterator2, mapFn);
       });
     }
     var composePaginateRest = Object.assign(paginate, {
@@ -7423,10 +7942,10 @@ var require_dist_node10 = __commonJS({
         return false;
       }
     }
-    function paginateRest(octokit) {
+    function paginateRest(octokit3) {
       return {
-        paginate: Object.assign(paginate.bind(null, octokit), {
-          iterator: iterator.bind(null, octokit)
+        paginate: Object.assign(paginate.bind(null, octokit3), {
+          iterator: iterator.bind(null, octokit3)
         })
       };
     }
@@ -7535,36 +8054,675 @@ var require_github = __commonJS({
     var Context = __importStar(require_context());
     var utils_1 = require_utils4();
     exports.context = new Context.Context();
-    function getOctokit2(token, options, ...additionalPlugins) {
+    function getOctokit3(token, options, ...additionalPlugins) {
       const GitHubWithPlugins = utils_1.GitHub.plugin(...additionalPlugins);
       return new GitHubWithPlugins(utils_1.getOctokitOptions(token, options));
     }
-    exports.getOctokit = getOctokit2;
+    exports.getOctokit = getOctokit3;
   }
 });
 
 // src/main.ts
+var core8 = __toESM(require_core());
+
+// src/return-dispatch/main.ts
+var core4 = __toESM(require_core());
+
+// node_modules/uuid/wrapper.mjs
+var import_dist = __toESM(require_dist2(), 1);
+var v1 = import_dist.default.v1;
+var v3 = import_dist.default.v3;
+var v4 = import_dist.default.v4;
+var v5 = import_dist.default.v5;
+var NIL = import_dist.default.NIL;
+var version = import_dist.default.version;
+var validate = import_dist.default.validate;
+var stringify = import_dist.default.stringify;
+var parse = import_dist.default.parse;
+
+// src/return-dispatch/action.ts
 var core = __toESM(require_core());
+var WORKFLOW_TIMEOUT_SECONDS = 5 * 60;
+function getConfig() {
+  return {
+    token: core.getInput("token", { required: true }),
+    ref: core.getInput("ref", { required: true }),
+    repo: core.getInput("repo", { required: true }),
+    owner: core.getInput("owner", { required: true }),
+    workflow: getWorkflowValue(core.getInput("workflow", { required: true })),
+    workflowInputs: getWorkflowInputs(core.getInput("workflow_inputs")),
+    workflowTimeoutSeconds: getNumberFromValue(core.getInput("workflow_timeout_seconds")) || WORKFLOW_TIMEOUT_SECONDS
+  };
+}
+function getNumberFromValue(value) {
+  if (value === "") {
+    return void 0;
+  }
+  try {
+    const num = parseInt(value);
+    if (isNaN(num)) {
+      throw new Error("Parsed value is NaN");
+    }
+    return num;
+  } catch {
+    throw new Error(`Unable to parse value: ${value}`);
+  }
+}
+function getWorkflowInputs(workflowInputs) {
+  if (workflowInputs === "") {
+    return void 0;
+  }
+  try {
+    const parsedJson = JSON.parse(workflowInputs);
+    for (const key of Object.keys(parsedJson)) {
+      const type = typeof parsedJson[key];
+      if (type !== "string") {
+        throw new Error(
+          `Expected values to be strings, ${key} value is ${type}`
+        );
+      }
+    }
+    return parsedJson;
+  } catch (error6) {
+    core.error("Failed to parse workflow_inputs JSON");
+    if (error6 instanceof Error) {
+      error6.stack && core.debug(error6.stack);
+    }
+    throw error6;
+  }
+}
+function getWorkflowValue(workflowInput) {
+  try {
+    return getNumberFromValue(workflowInput);
+  } catch {
+    return workflowInput;
+  }
+}
+
+// src/return-dispatch/api.ts
+var core3 = __toESM(require_core());
 var github = __toESM(require_github());
+
+// src/return-dispatch/utils.ts
+var core2 = __toESM(require_core());
+function getBranchNameFromRef(ref) {
+  const refItems = ref.split(/\/?refs\/heads\//);
+  if (refItems.length > 1 && refItems[1].length > 0) {
+    return refItems[1];
+  }
+}
+function isTagRef(ref) {
+  return new RegExp(/\/?refs\/tags\//).test(ref);
+}
+function getBranchName(ref) {
+  let branchName;
+  if (!isTagRef(ref)) {
+    const branch = getBranchNameFromRef(ref);
+    if (branch) {
+      branchName = branch;
+      core2.debug(`getWorkflowRunIds: Filtered branch name: ${ref}`);
+    } else {
+      core2.warning(
+        `failed to get branch for ref: ${ref}, please raise an issue with this git ref.`
+      );
+    }
+  } else {
+    core2.debug(`Unable to filter branch, unsupported ref: ${ref}`);
+  }
+  return branchName;
+}
+
+// src/return-dispatch/api.ts
+var config;
+var octokit;
+function init(cfg) {
+  config = cfg || getConfig();
+  octokit = github.getOctokit(config.token);
+}
+async function dispatchWorkflow(distinctId) {
+  try {
+    const response = await octokit.rest.actions.createWorkflowDispatch({
+      owner: config.owner,
+      repo: config.repo,
+      workflow_id: config.workflow,
+      ref: config.ref,
+      inputs: {
+        ...config.workflowInputs ? config.workflowInputs : void 0,
+        distinct_id: distinctId
+      }
+    });
+    if (response.status !== 204) {
+      throw new Error(
+        `Failed to dispatch action, expected 204 but received ${response.status}`
+      );
+    }
+    core3.info(
+      `Successfully dispatched workflow:
+  Repository: ${config.owner}/${config.repo}
+  Branch: ${config.ref}
+  Workflow ID: ${config.workflow}
+` + (config.workflowInputs ? `  Workflow Inputs: ${JSON.stringify(config.workflowInputs)}
+` : ``) + `  Distinct ID: ${distinctId}`
+    );
+  } catch (error6) {
+    if (error6 instanceof Error) {
+      core3.error(
+        `dispatchWorkflow: An unexpected error has occurred: ${error6.message}`
+      );
+      error6.stack && core3.debug(error6.stack);
+    }
+    throw error6;
+  }
+}
+async function getWorkflowId(workflowFilename) {
+  var _a;
+  try {
+    const response = await octokit.rest.actions.listRepoWorkflows({
+      owner: config.owner,
+      repo: config.repo
+    });
+    if (response.status !== 200) {
+      throw new Error(
+        `Failed to get workflows, expected 200 but received ${response.status}`
+      );
+    }
+    const workflowId = (_a = response.data.workflows.find(
+      (workflow) => new RegExp(workflowFilename).test(workflow.path)
+    )) == null ? void 0 : _a.id;
+    if (workflowId === void 0) {
+      throw new Error(`Unable to find ID for Workflow: ${workflowFilename}`);
+    }
+    return workflowId;
+  } catch (error6) {
+    if (error6 instanceof Error) {
+      core3.error(
+        `getWorkflowId: An unexpected error has occurred: ${error6.message}`
+      );
+      error6.stack && core3.debug(error6.stack);
+    }
+    throw error6;
+  }
+}
+async function getWorkflowRunUrl(runId) {
+  try {
+    const response = await octokit.rest.actions.getWorkflowRun({
+      owner: config.owner,
+      repo: config.repo,
+      run_id: runId
+    });
+    if (response.status !== 200) {
+      throw new Error(
+        `Failed to get Workflow Run state, expected 200 but received ${response.status}`
+      );
+    }
+    core3.debug(
+      `Fetched Run:
+  Repository: ${config.owner}/${config.repo}
+  Run ID: ${runId}
+  URL: ${response.data.html_url}`
+    );
+    return response.data.html_url;
+  } catch (error6) {
+    if (error6 instanceof Error) {
+      core3.error(
+        `getWorkflowRunUrl: An unexpected error has occurred: ${error6.message}`
+      );
+      error6.stack && core3.debug(error6.stack);
+    }
+    throw error6;
+  }
+}
+async function getWorkflowRunIds(workflowId) {
+  try {
+    const branchName = getBranchName(config.ref);
+    const response = await octokit.rest.actions.listWorkflowRuns({
+      owner: config.owner,
+      repo: config.repo,
+      workflow_id: workflowId,
+      ...branchName ? {
+        branch: branchName,
+        per_page: 5
+      } : {
+        per_page: 10
+      }
+    });
+    if (response.status !== 200) {
+      throw new Error(
+        `Failed to get Workflow runs, expected 200 but received ${response.status}`
+      );
+    }
+    const runIds = response.data.workflow_runs.map(
+      (workflowRun) => workflowRun.id
+    );
+    core3.debug(
+      `Fetched Workflow Runs:
+  Repository: ${config.owner}/${config.repo}
+  Branch: ${branchName || "undefined"}
+  Workflow ID: ${workflowId}
+  Runs Fetched: [${runIds}]`
+    );
+    return runIds;
+  } catch (error6) {
+    if (error6 instanceof Error) {
+      core3.error(
+        `getWorkflowRunIds: An unexpected error has occurred: ${error6.message}`
+      );
+      error6.stack && core3.debug(error6.stack);
+    }
+    throw error6;
+  }
+}
+async function getWorkflowRunJobSteps(runId) {
+  try {
+    const response = await octokit.rest.actions.listJobsForWorkflowRun({
+      owner: config.owner,
+      repo: config.repo,
+      run_id: runId,
+      filter: "latest"
+    });
+    if (response.status !== 200) {
+      throw new Error(
+        `Failed to get Workflow Run Jobs, expected 200 but received ${response.status}`
+      );
+    }
+    const jobs = response.data.jobs.map((job) => {
+      var _a;
+      return {
+        id: job.id,
+        steps: ((_a = job.steps) == null ? void 0 : _a.map((step) => step.name)) || []
+      };
+    });
+    const steps = Array.from(new Set(jobs.flatMap((job) => job.steps)));
+    core3.debug(
+      `Fetched Workflow Run Job Steps:
+  Repository: ${config.owner}/${config.repo}
+  Workflow Run ID: ${runId}
+  Jobs Fetched: [${jobs.map((job) => job.id)}]  Steps Fetched: [${steps}]`
+    );
+    return steps;
+  } catch (error6) {
+    if (error6 instanceof Error) {
+      core3.error(
+        `getWorkflowRunJobs: An unexpected error has occurred: ${error6.message}`
+      );
+      error6.stack && core3.debug(error6.stack);
+    }
+    throw error6;
+  }
+}
+async function retryOrDie(retryFunc, timeoutMs) {
+  const startTime = Date.now();
+  let elapsedTime = 0;
+  while (elapsedTime < timeoutMs) {
+    elapsedTime = Date.now() - startTime;
+    const response = await retryFunc();
+    if (response.length > 0) {
+      return response;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 1e3));
+  }
+  throw new Error("Timed out while attempting to fetch data");
+}
+
+// src/return-dispatch/main.ts
+var DISTINCT_ID = v4();
+var WORKFLOW_FETCH_TIMEOUT_MS = 60 * 1e3;
+var WORKFLOW_JOB_STEPS_RETRY_MS = 5e3;
+async function runWF(owner, ref, repo, token, workflow, workflowTimeout) {
+  try {
+    const config3 = {
+      owner,
+      ref,
+      repo,
+      token,
+      workflow,
+      workflowTimeoutSeconds: workflowTimeout
+    };
+    const startTime = Date.now();
+    init(config3);
+    let workflowId;
+    if (typeof config3.workflow === "string") {
+      core4.info(`Fetching Workflow ID for ${config3.workflow}...`);
+      workflowId = await getWorkflowId(config3.workflow);
+      core4.info(`Fetched Workflow ID: ${workflowId}`);
+    } else {
+      workflowId = config3.workflow;
+    }
+    await dispatchWorkflow(DISTINCT_ID);
+    const timeoutMs = config3.workflowTimeoutSeconds * 1e3;
+    let attemptNo = 0;
+    let elapsedTime = Date.now() - startTime;
+    core4.info("Attempt to extract run ID from steps...");
+    while (elapsedTime < timeoutMs) {
+      attemptNo++;
+      elapsedTime = Date.now() - startTime;
+      core4.debug(`Attempting to fetch Run IDs for Workflow ID ${workflowId}`);
+      const workflowRunIds = await retryOrDie(
+        () => getWorkflowRunIds(workflowId),
+        WORKFLOW_FETCH_TIMEOUT_MS > timeoutMs ? timeoutMs : WORKFLOW_FETCH_TIMEOUT_MS
+      );
+      core4.debug(
+        `Attempting to get step names for Run IDs: [${workflowRunIds}]`
+      );
+      const idRegex = new RegExp(DISTINCT_ID);
+      for (const id of workflowRunIds) {
+        try {
+          const steps = await getWorkflowRunJobSteps(id);
+          for (const step of steps) {
+            if (idRegex.test(step)) {
+              const url = await getWorkflowRunUrl(id);
+              core4.info(
+                `Successfully identified remote Run:
+  Run ID: ${id}
+  URL: ${url}`
+              );
+              return "run_id" /* runId */;
+            }
+          }
+        } catch (error6) {
+          if (error6 instanceof Error && error6.message !== "Not Found") {
+            throw error6;
+          }
+          core4.debug(`Could not identify ID in run: ${id}, continuing...`);
+        }
+      }
+      core4.info(
+        `Exhausted searching IDs in known runs, attempt ${attemptNo}...`
+      );
+      await new Promise(
+        (resolve) => setTimeout(resolve, WORKFLOW_JOB_STEPS_RETRY_MS)
+      );
+    }
+    throw new Error("Timeout exceeded while attempting to get Run ID");
+  } catch (error6) {
+    if (error6 instanceof Error) {
+      core4.error(`Failed to complete: ${error6.message}`);
+      core4.warning("Does the token have the correct permissions?");
+      error6.stack && core4.debug(error6.stack);
+      core4.setFailed(error6.message);
+    }
+  }
+  return "run_id" /* runId */;
+}
+
+// src/await-remote-run/main.ts
+var core7 = __toESM(require_core());
+
+// src/await-remote-run/api.ts
+var core6 = __toESM(require_core());
+var github2 = __toESM(require_github());
+
+// src/await-remote-run/action.ts
+var core5 = __toESM(require_core());
+var RUN_TIMEOUT_SECONDS = 5 * 60;
+var POLL_INTERVAL_MS = 5e3;
+function getConfig2() {
+  return {
+    token: core5.getInput("token", { required: true }),
+    repo: core5.getInput("repo", { required: true }),
+    owner: core5.getInput("owner", { required: true }),
+    runId: getRunIdFromValue(core5.getInput("run_id")),
+    runTimeoutSeconds: getNumberFromValue2(core5.getInput("run_timeout_seconds")) || RUN_TIMEOUT_SECONDS,
+    pollIntervalMs: getNumberFromValue2(core5.getInput("poll_interval_ms")) || POLL_INTERVAL_MS
+  };
+}
+function getRunIdFromValue(value) {
+  const id = getNumberFromValue2(value);
+  if (id === void 0) {
+    throw new Error("Run ID must be provided.");
+  }
+  return id;
+}
+function getNumberFromValue2(value) {
+  if (value === "") {
+    return void 0;
+  }
+  try {
+    const num = parseInt(value);
+    if (isNaN(num)) {
+      throw new Error("Parsed value is NaN");
+    }
+    return num;
+  } catch {
+    throw new Error(`Unable to parse value: ${value}`);
+  }
+}
+
+// src/await-remote-run/api.ts
+var config2;
+var octokit2;
+function init2(cfg) {
+  config2 = cfg || getConfig2();
+  octokit2 = github2.getOctokit(config2.token);
+}
+async function getWorkflowRunState(runId) {
+  try {
+    const response = await octokit2.rest.actions.getWorkflowRun({
+      owner: config2.owner,
+      repo: config2.repo,
+      run_id: runId
+    });
+    if (response.status !== 200) {
+      throw new Error(
+        `Failed to get Workflow Run state, expected 200 but received ${response.status}`
+      );
+    }
+    core6.debug(
+      `Fetched Run:
+  Repository: ${config2.owner}/${config2.repo}
+  Run ID: ${runId}
+  Status: ${response.data.status}
+  Conclusion: ${response.data.conclusion}`
+    );
+    return {
+      status: response.data.status,
+      conclusion: response.data.conclusion
+    };
+  } catch (error6) {
+    if (error6 instanceof Error) {
+      core6.error(
+        `getWorkflowRunState: An unexpected error has occurred: ${error6.message}`
+      );
+      error6.stack && core6.debug(error6.stack);
+    }
+    throw error6;
+  }
+}
+async function getWorkflowRunJobs(runId) {
+  const response = await octokit2.rest.actions.listJobsForWorkflowRun({
+    owner: config2.owner,
+    repo: config2.repo,
+    run_id: runId,
+    filter: "latest"
+  });
+  if (response.status !== 200) {
+    throw new Error(
+      `Failed to get Jobs for Workflow Run, expected 200 but received ${response.status}`
+    );
+  }
+  return response;
+}
+async function getWorkflowRunFailedJobs(runId) {
+  try {
+    const response = await getWorkflowRunJobs(runId);
+    const fetchedFailedJobs = response.data.jobs.filter(
+      (job) => job.conclusion === "failure"
+    );
+    if (fetchedFailedJobs.length <= 0) {
+      core6.warning(`Failed to find failed Jobs for Workflow Run ${runId}`);
+      return [];
+    }
+    const jobs = fetchedFailedJobs.map((job) => {
+      var _a;
+      const steps = (_a = job.steps) == null ? void 0 : _a.map((step) => ({
+        name: step.name,
+        status: step.status,
+        conclusion: step.conclusion,
+        number: step.number
+      }));
+      return {
+        id: job.id,
+        name: job.name,
+        status: job.status,
+        conclusion: job.conclusion,
+        steps: steps || [],
+        url: job.html_url
+      };
+    });
+    core6.debug(
+      `Fetched Jobs for Run:
+  Repository: ${config2.owner}/${config2.repo}
+  Run ID: ${config2.runId}
+  Jobs: [${jobs.map((job) => job.name)}]`
+    );
+    for (const job of jobs) {
+      const steps = job.steps.map((step) => `${step.number}: ${step.name}`);
+      core6.debug(
+        `  Job: ${job.name}
+    ID: ${job.id}
+    Status: ${job.status}
+    Conclusion: ${job.conclusion}
+    Steps: [${steps}]`
+      );
+    }
+    return jobs;
+  } catch (error6) {
+    if (error6 instanceof Error) {
+      core6.error(
+        `getWorkflowRunJobFailures: An unexpected error has occurred: ${error6.message}`
+      );
+      error6.stack && core6.debug(error6.stack);
+    }
+    throw error6;
+  }
+}
+async function getWorkflowRunActiveJobUrl(runId) {
+  try {
+    const response = await getWorkflowRunJobs(runId);
+    const fetchedInProgressJobs = response.data.jobs.filter(
+      (job) => job.status === "in_progress"
+    );
+    if (fetchedInProgressJobs.length <= 0) {
+      core6.warning(`Failed to find in_progress Jobs for Workflow Run ${runId}`);
+      return "Unable to fetch URL";
+    }
+    core6.debug(
+      `Fetched Jobs for Run:
+  Repository: ${config2.owner}/${config2.repo}
+  Run ID: ${config2.runId}
+  Jobs (in_progress): [${fetchedInProgressJobs.map(
+        (job) => job.name
+      )}]`
+    );
+    return fetchedInProgressJobs[0].html_url || "GitHub failed to return the URL";
+  } catch (error6) {
+    if (error6 instanceof Error) {
+      core6.error(
+        `getWorkflowRunActiveJobUrl: An unexpected error has occurred: ${error6.message}`
+      );
+      error6.stack && core6.debug(error6.stack);
+    }
+    throw error6;
+  }
+}
+
+// src/await-remote-run/main.ts
+async function logFailureDetails(runId) {
+  const failedJobs = await getWorkflowRunFailedJobs(runId);
+  for (const failedJob of failedJobs) {
+    const failedSteps = failedJob.steps.filter((step) => step.conclusion !== "success").map((step) => {
+      return `    ${step.number}: ${step.name}
+      Status: ${step.status}
+      Conclusion: ${step.conclusion}`;
+    }).join("\n");
+    core7.error(
+      `Job ${failedJob.name}:
+  ID: ${failedJob.id}
+  Status: ${failedJob.status}
+  Conclusion: ${failedJob.conclusion}
+  URL: ${failedJob.url}
+  Steps (non-success):
+` + failedSteps
+    );
+  }
+}
+async function runWait(owner, pollInterval, repo, runId, timeout, token) {
+  try {
+    const config3 = {
+      owner: "",
+      pollIntervalMs: 0,
+      repo: "",
+      runId: 0,
+      runTimeoutSeconds: 0,
+      token: ""
+    };
+    const startTime = Date.now();
+    init2(config3);
+    const timeoutMs = config3.runTimeoutSeconds * 1e3;
+    let attemptNo = 0;
+    let elapsedTime = Date.now() - startTime;
+    core7.info(
+      `Awaiting completion of Workflow Run ${config3.runId}...
+  ID: ${config3.runId}
+  URL: ${await getWorkflowRunActiveJobUrl(config3.runId)}`
+    );
+    while (elapsedTime < timeoutMs) {
+      attemptNo++;
+      elapsedTime = Date.now() - startTime;
+      const { status, conclusion } = await getWorkflowRunState(config3.runId);
+      if (status === "completed" /* Completed */) {
+        switch (conclusion) {
+          case "success" /* Success */:
+            core7.info(
+              `Run Completed:
+  Run ID: ${config3.runId}
+  Status: ${status}
+  Conclusion: ${conclusion}`
+            );
+            return;
+          case "action_required" /* ActionRequired */:
+          case "cancelled" /* Cancelled */:
+          case "failure" /* Failure */:
+          case "neutral" /* Neutral */:
+          case "skipped" /* Skipped */:
+          case "timed_out" /* TimedOut */:
+            core7.error(`Run has failed with conclusion: ${conclusion}`);
+            await logFailureDetails(config3.runId);
+            core7.setFailed(conclusion);
+            return;
+          default:
+            core7.setFailed(`Unknown conclusion: ${conclusion}`);
+            return;
+        }
+      }
+      core7.debug(`Run has not concluded, attempt ${attemptNo}...`);
+      await new Promise(
+        (resolve) => setTimeout(resolve, config3.pollIntervalMs)
+      );
+    }
+    throw new Error(
+      `Timeout exceeded while awaiting completion of Run ${config3.runId}`
+    );
+  } catch (error6) {
+    if (error6 instanceof Error) {
+      core7.error(`Failed to complete: ${error6.message}`);
+      if (!error6.message.includes("Timeout")) {
+        core7.warning("Does the token have the correct permissions?");
+      }
+      error6.stack && core7.debug(error6.stack);
+      core7.setFailed(error6.message);
+    }
+  }
+}
+
+// src/main.ts
 async function spinUpEKS(meta, token) {
-  let octokit = github.getOctokit(token);
   if (meta.hasOwnProperty("extensions")) {
     if (meta["extensions"].hasOwnProperty("kubernetes")) {
       console.log("call eks workflow");
-      let wf = await octokit.rest.actions.createWorkflowDispatch({
-        owner: "unity-sds",
-        repo: "unity-cs-infra",
-        workflow_id: "deploy_eks.yml",
-        ref: "main",
-        inputs: {
-          "KEY": core.getInput("KEY"),
-          "SECRET": core.getInput("SECRET"),
-          "TOKEN": core.getInput("TOKEN"),
-          "OWNER": "",
-          "PROJECTNAME": ""
-        }
-      });
-      console.log(wf);
+      let id = await runWF("unity-sds", "main", "unity-cs-infra", token, "deploy_eks.yml", 3600);
+      await runWait("unity-sds", 5e3, "unity-cs-infra", parseInt(id), 3600, token);
+      console.log("wf id: " + id);
     }
   } else {
     console.log("call eks workflow 2");
@@ -7579,12 +8737,12 @@ function spinUpProjects(meta, token) {
   }
 }
 async function run() {
-  let meta = core.getInput("ucsmetadata");
-  let token = core.getInput("token");
+  let meta = core8.getInput("ucsmetadata");
+  let token = core8.getInput("token");
   if (meta === void 0 || meta.length < 2) {
-    meta = core.getInput("eksmetadata");
+    meta = core8.getInput("eksmetadata");
     if (meta === void 0 || meta.length < 2) {
-      core.setFailed("No metadata found");
+      core8.setFailed("No metadata found");
     }
   }
   console.log(`Found meta ${meta}!`);
@@ -7592,7 +8750,7 @@ async function run() {
   spinUpEKS(metaobj, token);
   spinUpProjects(metaobj, token);
   const time = new Date().toTimeString();
-  core.setOutput("time", time);
+  core8.setOutput("time", time);
 }
 (() => run())();
 /*!
