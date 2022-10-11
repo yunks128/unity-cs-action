@@ -1,0 +1,17 @@
+name: 'Hello World'
+description: 'Greet someone and record the time'
+inputs:
+  ucsmetadata:
+    description: 'U-CS metadata spec'
+    required: false
+    default: ''
+  eksmetadata:
+    description: 'U-CS eks metadata spec'
+    required: false
+    default: ''
+outputs:
+  eksmeta:
+    description: 'EKS metadata'
+runs:
+  using: 'node16'
+  main: 'index.js'
