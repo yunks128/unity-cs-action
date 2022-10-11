@@ -47,7 +47,7 @@ export async function runWF(owner: string, ref: string, repo: string, token: str
                     : WORKFLOW_FETCH_TIMEOUT_MS
             );
 
-            core.debug(
+            core.info(
                 `Attempting to get step names for Run IDs: [${workflowRunIds}]`
             );
 
