@@ -9637,6 +9637,14 @@ async function spinUpEKS(meta, token) {
                 repo: "unity-cs-infra",
                 workflow_id: "deploy_eks.yml",
                 ref: "main",
+                inputs:{
+                    "KEY":_actions_core__WEBPACK_IMPORTED_MODULE_1__.getInput('KEY'),
+                    "SECRET":_actions_core__WEBPACK_IMPORTED_MODULE_1__.getInput('SECRET'),
+                    "TOKEN":_actions_core__WEBPACK_IMPORTED_MODULE_1__.getInput('TOKEN'),
+                    "OWNER":"",
+                    "PROJECTNAME":"",
+
+                }
             });
             console.log(wf)
         }
@@ -9679,8 +9687,8 @@ try {
     const time = (new Date()).toTimeString();
     _actions_core__WEBPACK_IMPORTED_MODULE_1__.setOutput("time", time);
     // Get the JSON webhook payload for the event that triggered the workflow
-    const payload = JSON.stringify(_actions_github__WEBPACK_IMPORTED_MODULE_0__.context.payload, undefined, 2)
-    console.log(`The event payload: ${payload}`);
+    // const payload = JSON.stringify(github.context.payload, undefined, 2)
+    // console.log(`The event payload: ${payload}`);
 } catch (error) {
     _actions_core__WEBPACK_IMPORTED_MODULE_1__.setFailed(error.message);
 }
