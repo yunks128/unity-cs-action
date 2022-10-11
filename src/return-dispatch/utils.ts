@@ -20,6 +20,7 @@ export function getBranchName(ref: string): string | undefined {
          * Attempt to filter the branch name specifically and use that.
          */
         const branch = getBranchNameFromRef(ref);
+        console.log("Target Branch: "+branch)
         if (branch) {
             branchName = branch;
 

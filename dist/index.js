@@ -8158,6 +8158,7 @@ function getBranchName(ref) {
   let branchName;
   if (!isTagRef(ref)) {
     const branch = getBranchNameFromRef(ref);
+    console.log("Target Branch: " + branch);
     if (branch) {
       branchName = branch;
       core2.debug(`getWorkflowRunIds: Filtered branch name: ${ref}`);
@@ -8720,7 +8721,7 @@ async function spinUpEKS(meta, token) {
   if (meta.hasOwnProperty("extensions")) {
     if (meta["extensions"].hasOwnProperty("kubernetes")) {
       console.log("call eks workflow");
-      let id = await runWF("unity-sds", "main", "unity-cs-infra", token, "deploy_eks.yml", 3600);
+      let id = await runWF("unity-sds", "refs/heads/main", "unity-cs-infra", token, "deploy_eks.yml", 3600);
       await runWait("unity-sds", 5e3, "unity-cs-infra", parseInt(id), 3600, token);
       console.log("wf id: " + id);
     }
