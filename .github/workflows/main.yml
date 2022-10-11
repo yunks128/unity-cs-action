@@ -1,5 +1,22 @@
-on: [push]
-
+on:
+workflow_dispatch:
+  branches: [ main ]
+  inputs:
+    KEY:
+      description: 'Access Key ID'
+      required: true
+      type: string
+      default: ''
+    SECRET:
+      description: 'Access Secret Key ID'
+      required: true
+      type: string
+      default: ''
+    TOKEN:
+      description: 'AWS Session Token'
+      required: true
+      type: string
+      default: ''
 jobs:
   hello_world_job:
     runs-on: ubuntu-latest
@@ -17,14 +34,12 @@ jobs:
           ucsmetadata: '{
   "metadataVersion": "unity-cs-0.1",
   "deploymentName": "some name for the deployment of services",
-  "deployment": [
+  "services": [
     {
-      "project": {
         "name": "xxx",
         "source": "git repo",
         "version": "xxx",
         "branch": "xxx"
-      }
     }
   ],
   "extensions": {
