@@ -8080,6 +8080,10 @@ var validate = import_dist.default.validate;
 var stringify = import_dist.default.stringify;
 var parse = import_dist.default.parse;
 
+// src/return-dispatch/api.ts
+var core3 = __toESM(require_core());
+var github = __toESM(require_github());
+
 // src/return-dispatch/action.ts
 var core = __toESM(require_core());
 var WORKFLOW_TIMEOUT_SECONDS = 5 * 60;
@@ -8138,10 +8142,6 @@ function getWorkflowValue(workflowInput) {
     return workflowInput;
   }
 }
-
-// src/return-dispatch/api.ts
-var core3 = __toESM(require_core());
-var github = __toESM(require_github());
 
 // src/return-dispatch/utils.ts
 var core2 = __toESM(require_core());
@@ -8418,7 +8418,7 @@ async function runWF(owner, ref, repo, token, workflow, workflowTimeout) {
   Run ID: ${id}
   URL: ${url}`
               );
-              return "run_id" /* runId */;
+              return id;
             }
           }
         } catch (error6) {
@@ -8444,7 +8444,7 @@ async function runWF(owner, ref, repo, token, workflow, workflowTimeout) {
       core4.setFailed(error6.message);
     }
   }
-  return "run_id" /* runId */;
+  return -1;
 }
 
 // src/await-remote-run/main.ts
@@ -8725,7 +8725,7 @@ async function spinUpEKS(meta, token) {
       console.log("call eks workflow");
       let id = await runWF("unity-sds", "refs/heads/main", "unity-cs-infra", token, "deploy_eks.yml", 3600);
       console.log("checking run");
-      await runWait("unity-sds", 5e3, "unity-cs-infra", parseInt(id), 3600, token);
+      await runWait("unity-sds", 5e3, "unity-cs-infra", id, 3600, token);
       console.log("wf id: " + id);
     }
   } else {

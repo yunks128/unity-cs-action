@@ -7,7 +7,7 @@ const DISTINCT_ID = uuid();
 const WORKFLOW_FETCH_TIMEOUT_MS = 60 * 1000;
 const WORKFLOW_JOB_STEPS_RETRY_MS = 5000;
 
-export async function runWF(owner: string, ref: string, repo: string, token: string, workflow: string, workflowTimeout: number): Promise<ActionOutputs> {
+export async function runWF(owner: string, ref: string, repo: string, token: string, workflow: string, workflowTimeout: number): Promise<number> {
     try {
         const config : ActionConfig = {
             owner: owner, ref: ref, repo: repo, token: token, workflow: workflow, workflowTimeoutSeconds: workflowTimeout
@@ -71,7 +71,7 @@ export async function runWF(owner: string, ref: string, repo: string, token: str
                                 `  URL: ${url}`
                             );
                             //core.setOutput(ActionOutputs.runId, id);
-                            return ActionOutputs.runId
+                            return id
                         }
                     }
                 } catch (error) {
@@ -100,6 +100,6 @@ export async function runWF(owner: string, ref: string, repo: string, token: str
             core.setFailed(error.message);
         }
     }
-    return ActionOutputs.runId
+    return -1
 
 }
