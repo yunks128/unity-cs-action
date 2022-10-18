@@ -42,7 +42,7 @@ export interface ActionConfig {
     workflowTimeoutSeconds: number;
 }
 
-interface ActionWorkflowInputs {
+export interface ActionWorkflowInputs {
     [input: string]: string;
 }
 

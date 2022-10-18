@@ -1,17 +1,22 @@
 import * as core from "@actions/core";
 import {v4 as uuid} from "uuid";
-import {ActionConfig, ActionOutputs} from "./action";
+import {ActionConfig, ActionOutputs, ActionWorkflowInputs} from "./action";
 import * as api from "./api";
 
 const DISTINCT_ID = uuid();
 const WORKFLOW_FETCH_TIMEOUT_MS = 60 * 1000;
 const WORKFLOW_JOB_STEPS_RETRY_MS = 5000;
 
-export async function runWF(owner: string, ref: string, repo: string, token: string, workflow: string, workflowTimeout: number): Promise<number> {
+export async function runWF(owner: string, ref: string, repo: string, token: string, workflow: string, workflowTimeout: number, wfinputs: ActionWorkflowInputs): Promise<number> {
     try {
-        const config : ActionConfig = {
-            owner: owner, ref: ref, repo: repo, token: token, workflow: workflow, workflowTimeoutSeconds: workflowTimeout
-
+        const config: ActionConfig = {
+            owner: owner,
+            ref: ref,
+            repo: repo,
+            token: token,
+            workflow: workflow,
+            workflowTimeoutSeconds: workflowTimeout,
+            workflowInputs: wfinputs
         };
         const startTime = Date.now();
         api.init(config);
@@ -62,7 +67,7 @@ export async function runWF(owner: string, ref: string, repo: string, token: str
                     const steps = await api.getWorkflowRunJobSteps(id);
                     for (const step of steps) {
                         if (idRegex.test(step)) {
-                            core.info("found search: "+step)
+                            core.info("found search: " + step)
 
                             const url = await api.getWorkflowRunUrl(id);
                             core.info(
