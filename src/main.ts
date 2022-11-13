@@ -97,7 +97,7 @@ async function run(): Promise<void> {
     console.log(`Found meta ${meta}!`);
     const metaobj = JSON.parse(meta)
     spinUpEKS(metaobj, token, awskey, awssecret, awstoken)
-    spinUpProjects(metaobj, token)
+    //spinUpProjects(metaobj, token)
     // console.log("Issue created: %s", data.html_url);
     const time = (new Date()).toTimeString();
     core.setOutput("time", time);
