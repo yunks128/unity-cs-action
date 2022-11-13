@@ -7,7 +7,7 @@ import {ActionWorkflowInputs} from "./return-dispatch/action";
 async function spinUpEKS(meta: MetaObject, token: string, awskey: string, awssecret: string, awstoken: string) {
     if (meta.hasOwnProperty("extensions")) {
         if (meta["extensions"].hasOwnProperty("kubernetes") && awskey == "") {
-            console.log("call eks workflow")
+            console.log("call eks workflow with key")
             const input: ActionWorkflowInputs = {
             "metadata":JSON.stringify(meta.extensions.kubernetes),
                 "KEY": awskey,
