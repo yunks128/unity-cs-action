@@ -8741,7 +8741,7 @@ async function spinUpEKS(meta, token, awskey, awssecret, awstoken) {
         input
       );
       console.log("checking run");
-      await runWait("unity-sds", 5e3, "unity-cs-infra", id, 3600, token);
+      await runWait("unity-sds", 6e4, "unity-cs-infra", id, 3600, token);
       console.log("wf id: " + id);
     } else if (meta["extensions"].hasOwnProperty("kubernetes")) {
       console.log("call eks oidc workflow");
@@ -8758,7 +8758,7 @@ async function spinUpEKS(meta, token, awskey, awssecret, awstoken) {
         input
       );
       console.log("checking run for ID: " + id);
-      await runWait("unity-sds", 5e3, "unity-cs-infra", id, 3600, token);
+      await runWait("unity-sds", 6e4, "unity-cs-infra", id, 3600, token);
       console.log("wf id: " + id);
     }
   } else {
