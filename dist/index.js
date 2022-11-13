@@ -8809,8 +8809,8 @@ async function run() {
   }
   console.log(`Found meta ${meta}!`);
   const metaobj = JSON.parse(meta);
-  spinUpEKS(metaobj, token, awskey, awssecret, awstoken);
-  spinUpProjects(metaobj, token);
+  await spinUpEKS(metaobj, token, awskey, awssecret, awstoken);
+  await spinUpProjects(metaobj, token);
   const time = new Date().toTimeString();
   core8.setOutput("time", time);
 }
