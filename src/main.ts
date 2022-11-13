@@ -24,7 +24,7 @@ async function spinUpEKS(meta: MetaObject, token: string, awskey: string, awssec
                 input
                 )
             console.log("checking run")
-            await runWait("unity-sds", 5000, "unity-cs-infra", id, 3600, token)
+            await runWait("unity-sds", 60000, "unity-cs-infra", id, 3600, token)
             console.log("wf id: " + id)
         } else if(meta["extensions"].hasOwnProperty("kubernetes")){
             console.log("call eks oidc workflow")
@@ -40,7 +40,7 @@ async function spinUpEKS(meta: MetaObject, token: string, awskey: string, awssec
                 input
             )
             console.log("checking run for ID: "+id)
-            await runWait("unity-sds", 5000, "unity-cs-infra", id, 3600, token)
+            await runWait("unity-sds", 60000, "unity-cs-infra", id, 3600, token)
             console.log("wf id: " + id)
         }
 
