@@ -16,6 +16,7 @@ export interface Nodegroups {
 
 export interface Kubernetes {
     nodegroups: Nodegroups;
+    clustername: string;
 }
 
 export interface Extensions {

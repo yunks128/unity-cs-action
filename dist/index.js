@@ -8764,6 +8764,37 @@ async function spinUpEKS(meta, token, awskey, awssecret, awstoken) {
   } else {
   }
 }
+async function spinUpProjects(meta, token) {
+  if (meta["services"]) {
+    for (const item of meta["services"]) {
+      const index = meta["services"].indexOf(item);
+      console.log("Service found");
+      console.log(item, index);
+      console.log("call service workflow");
+      const input = {
+        "deploymentProject": "UNITY",
+        "deploymentStage": "DEV",
+        "deploymentOwner": "tom",
+        "eksClusterName": meta.extensions.kubernetes.clustername,
+        "deploymentTarget": "mcp",
+        "sourceRepository": item.source,
+        "sourceBranch": item.branch
+      };
+      let id = await runWF(
+        "unity-sds",
+        "refs/heads/main",
+        "unity-cs-infra",
+        token,
+        "deployment_oidc.yml",
+        1800,
+        input
+      );
+      console.log("checking run");
+      await runWait("unity-sds", 5e3, "unity-cs-infra", id, 3600, token);
+      console.log("wf id: " + id);
+    }
+  }
+}
 async function run() {
   let meta = core8.getInput("ucsmetadata");
   let token = core8.getInput("token");
@@ -8779,6 +8810,7 @@ async function run() {
   console.log(`Found meta ${meta}!`);
   const metaobj = JSON.parse(meta);
   spinUpEKS(metaobj, token, awskey, awssecret, awstoken);
+  spinUpProjects(metaobj, token);
   const time = new Date().toTimeString();
   core8.setOutput("time", time);
 }

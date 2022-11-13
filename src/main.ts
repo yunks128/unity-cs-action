@@ -60,6 +60,10 @@ async function spinUpProjects(meta: MetaObject, token: string) {
             console.log(item, index);
             console.log("call service workflow")
             const input: ActionWorkflowInputs = {
+                "deploymentProject": "UNITY",
+                "deploymentStage": "DEV",
+                "deploymentOwner": "tom",
+                "eksClusterName": meta.extensions.kubernetes.clustername,
                 "deploymentTarget": "mcp",
                 "sourceRepository": item.source,
                 "sourceBranch": item.branch
@@ -68,7 +72,7 @@ async function spinUpProjects(meta: MetaObject, token: string) {
                 "refs/heads/main",
                 "unity-cs-infra",
                 token,
-                "deployment.yml",
+                "deployment_oidc.yml",
                 1800,
                 input
             )
@@ -97,7 +101,7 @@ async function run(): Promise<void> {
     console.log(`Found meta ${meta}!`);
     const metaobj = JSON.parse(meta)
     spinUpEKS(metaobj, token, awskey, awssecret, awstoken)
-    //spinUpProjects(metaobj, token)
+    spinUpProjects(metaobj, token)
     // console.log("Issue created: %s", data.html_url);
     const time = (new Date()).toTimeString();
     core.setOutput("time", time);
