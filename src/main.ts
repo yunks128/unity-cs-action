@@ -6,7 +6,7 @@ import {ActionWorkflowInputs} from "./return-dispatch/action";
 
 async function spinUpEKS(meta: MetaObject, token: string, awskey: string, awssecret: string, awstoken: string) {
     if (meta.hasOwnProperty("extensions")) {
-        if (meta["extensions"].hasOwnProperty("kubernetes")) {
+        if (meta["extensions"].hasOwnProperty("kubernetes") && awskey != "") {
             console.log("call eks workflow")
             const input: ActionWorkflowInputs = {
             "metadata":JSON.stringify(meta.extensions.kubernetes),
@@ -27,7 +27,21 @@ async function spinUpEKS(meta: MetaObject, token: string, awskey: string, awssec
             console.log("wf id: " + id)
         }
     } else {
-        console.log("call eks workflow 2")
+        console.log("call eks oidc workflow")
+        const input: ActionWorkflowInputs = {
+            "metadata":JSON.stringify(meta.extensions.kubernetes),
+        }
+        let id: number = await runWF("unity-sds",
+            "refs/heads/main",
+            "unity-cs-infra",
+            token,
+            "deploy_eks_callable_oidc.yml",
+            1800,
+            input
+        )
+        console.log("checking run")
+        await runWait("unity-sds", 5000, "unity-cs-infra", id, 3600, token)
+        console.log("wf id: " + id)
     }
 
 }
@@ -62,9 +76,12 @@ async function spinUpProjects(meta: MetaObject, token: string) {
 async function run(): Promise<void> {
     let meta = core.getInput('ucsmetadata');
     let token = core.getInput('token')
-    let awskey = core.getInput('awskey')
-    let awstoken = core.getInput('awstoken')
-    let awssecret = core.getInput('awssecret')
+    //let awskey = core.getInput('awskey')
+    //let awstoken = core.getInput('awstoken')
+    //let awssecret = core.getInput('awssecret')
+    let awskey = ""
+    let awstoken = ""
+    let awssecret = ""
     if (meta === undefined || meta.length < 2) {
         meta = core.getInput('eksmetadata')
         if (meta === undefined || meta.length < 2) {
