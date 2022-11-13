@@ -8723,7 +8723,7 @@ async function runWait(owner, pollInterval, repo, runId, timeout, token) {
 async function spinUpEKS(meta, token, awskey, awssecret, awstoken) {
   if (meta.hasOwnProperty("extensions")) {
     console.log("AWS Key: " + awskey);
-    if (meta["extensions"].hasOwnProperty("kubernetes") && awskey == "") {
+    if (meta["extensions"].hasOwnProperty("kubernetes") && awskey != "") {
       console.log("call eks workflow with key");
       const input = {
         "metadata": JSON.stringify(meta.extensions.kubernetes),
