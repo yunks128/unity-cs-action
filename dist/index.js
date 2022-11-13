@@ -8369,7 +8369,7 @@ async function retryOrDie(retryFunc, timeoutMs) {
 var DISTINCT_ID = v4();
 var WORKFLOW_FETCH_TIMEOUT_MS = 60 * 1e3;
 var WORKFLOW_JOB_STEPS_RETRY_MS = 5e3;
-async function runWF(owner, ref, repo, token, workflow, workflowTimeout) {
+async function runWF(owner, ref, repo, token, workflow, workflowTimeout, wfinputs) {
   try {
     const config3 = {
       owner,
@@ -8377,7 +8377,8 @@ async function runWF(owner, ref, repo, token, workflow, workflowTimeout) {
       repo,
       token,
       workflow,
-      workflowTimeoutSeconds: workflowTimeout
+      workflowTimeoutSeconds: workflowTimeout,
+      workflowInputs: wfinputs
     };
     const startTime = Date.now();
     init(config3);
@@ -8719,30 +8720,82 @@ async function runWait(owner, pollInterval, repo, runId, timeout, token) {
 }
 
 // src/main.ts
-async function spinUpEKS(meta, token) {
+async function spinUpEKS(meta, token, awskey, awssecret, awstoken) {
   if (meta.hasOwnProperty("extensions")) {
-    if (meta["extensions"].hasOwnProperty("kubernetes")) {
-      console.log("call eks workflow");
-      let id = await runWF("unity-sds", "refs/heads/main", "unity-cs-infra", token, "deploy_eks.yml", 3600);
+    if (meta["extensions"].hasOwnProperty("kubernetes") && awskey == "") {
+      console.log("call eks workflow with key");
+      const input = {
+        "metadata": JSON.stringify(meta.extensions.kubernetes),
+        "KEY": awskey,
+        "SECRET": awssecret,
+        "TOKEN": awstoken
+      };
+      let id = await runWF(
+        "unity-sds",
+        "refs/heads/main",
+        "unity-cs-infra",
+        token,
+        "deploy_eks_callable.yml",
+        1800,
+        input
+      );
+      console.log("checking run");
+      await runWait("unity-sds", 5e3, "unity-cs-infra", id, 3600, token);
+      console.log("wf id: " + id);
+    } else if (meta["extensions"].hasOwnProperty("kubernetes")) {
+      console.log("call eks oidc workflow");
+      const input = {
+        "metadata": JSON.stringify(meta.extensions.kubernetes)
+      };
+      let id = await runWF(
+        "unity-sds",
+        "refs/heads/main",
+        "unity-cs-infra",
+        token,
+        "deploy_eks_callable_oidc.yml",
+        1800,
+        input
+      );
       console.log("checking run");
       await runWait("unity-sds", 5e3, "unity-cs-infra", id, 3600, token);
       console.log("wf id: " + id);
     }
   } else {
-    console.log("call eks workflow 2");
   }
 }
-function spinUpProjects(meta, token) {
+async function spinUpProjects(meta, token) {
   if (meta["services"]) {
-    meta["services"].forEach(function(item, index) {
+    for (const item of meta["services"]) {
+      const index = meta["services"].indexOf(item);
       console.log("Service found");
       console.log(item, index);
-    });
+      console.log("call service workflow");
+      const input = {
+        "deploymentTarget": "mcp",
+        "sourceRepository": item.source,
+        "sourceBranch": item.branch
+      };
+      let id = await runWF(
+        "unity-sds",
+        "refs/heads/main",
+        "unity-cs-infra",
+        token,
+        "deployment.yml",
+        1800,
+        input
+      );
+      console.log("checking run");
+      await runWait("unity-sds", 5e3, "unity-cs-infra", id, 3600, token);
+      console.log("wf id: " + id);
+    }
   }
 }
 async function run() {
   let meta = core8.getInput("ucsmetadata");
   let token = core8.getInput("token");
+  let awskey = "";
+  let awstoken = "";
+  let awssecret = "";
   if (meta === void 0 || meta.length < 2) {
     meta = core8.getInput("eksmetadata");
     if (meta === void 0 || meta.length < 2) {
@@ -8751,7 +8804,7 @@ async function run() {
   }
   console.log(`Found meta ${meta}!`);
   const metaobj = JSON.parse(meta);
-  spinUpEKS(metaobj, token);
+  spinUpEKS(metaobj, token, awskey, awssecret, awstoken);
   spinUpProjects(metaobj, token);
   const time = new Date().toTimeString();
   core8.setOutput("time", time);
