@@ -8790,7 +8790,7 @@ async function spinUpProjects(meta, token) {
         input
       );
       console.log("checking run");
-      await runWait("unity-sds", 5e3, "unity-cs-infra", id, 3600, token);
+      await runWait("unity-sds", 6e4, "unity-cs-infra", id, 3600, token);
       console.log("wf id: " + id);
     }
   }

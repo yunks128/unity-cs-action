@@ -77,7 +77,7 @@ async function spinUpProjects(meta: MetaObject, token: string) {
                 input
             )
             console.log("checking run")
-            await runWait("unity-sds", 5000, "unity-cs-infra", id, 3600, token)
+            await runWait("unity-sds", 60000, "unity-cs-infra", id, 3600, token)
             console.log("wf id: " + id)
         }
     }
