@@ -8746,7 +8746,7 @@ async function spinUpEKS(meta, token, awskey, awssecret, awstoken) {
     } else if (meta["extensions"].hasOwnProperty("kubernetes")) {
       console.log("call eks oidc workflow");
       const input = {
-        "metadata": JSON.stringify(meta.extensions.kubernetes)
+        "META": JSON.stringify(meta.extensions.kubernetes)
       };
       let id = await runWF(
         "unity-sds",
