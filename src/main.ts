@@ -39,7 +39,7 @@ async function spinUpEKS(meta: MetaObject, token: string, awskey: string, awssec
                 1800,
                 input
             )
-            console.log("checking run")
+            console.log("checking run for ID: "+id)
             await runWait("unity-sds", 5000, "unity-cs-infra", id, 3600, token)
             console.log("wf id: " + id)
         }

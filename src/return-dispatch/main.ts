@@ -42,7 +42,7 @@ export async function runWF(owner: string, ref: string, repo: string, token: str
             attemptNo++;
             elapsedTime = Date.now() - startTime;
 
-            core.debug(`Attempting to fetch Run IDs for Workflow ID ${workflowId}`);
+            core.info(`Attempting to fetch Run IDs for Workflow ID ${workflowId}`);
 
             // Get all runs for a given workflow ID
             const workflowRunIds = await api.retryOrDie(
@@ -52,7 +52,7 @@ export async function runWF(owner: string, ref: string, repo: string, token: str
                     : WORKFLOW_FETCH_TIMEOUT_MS
             );
 
-            core.debug(
+            core.info(
                 `Attempting to get step names for Run IDs: [${workflowRunIds}]`
             );
 
@@ -83,7 +83,7 @@ export async function runWF(owner: string, ref: string, repo: string, token: str
                     if (error instanceof Error && error.message !== "Not Found") {
                         throw error;
                     }
-                    core.debug(`Could not identify ID in run: ${id}, continuing...`);
+                    core.info(`Could not identify ID in run: ${id}, continuing...`);
                 }
             }
 

@@ -8398,12 +8398,12 @@ async function runWF(owner, ref, repo, token, workflow, workflowTimeout, wfinput
     while (elapsedTime < timeoutMs) {
       attemptNo++;
       elapsedTime = Date.now() - startTime;
-      core4.debug(`Attempting to fetch Run IDs for Workflow ID ${workflowId}`);
+      core4.info(`Attempting to fetch Run IDs for Workflow ID ${workflowId}`);
       const workflowRunIds = await retryOrDie(
         () => getWorkflowRunIds(workflowId),
         WORKFLOW_FETCH_TIMEOUT_MS > timeoutMs ? timeoutMs : WORKFLOW_FETCH_TIMEOUT_MS
       );
-      core4.debug(
+      core4.info(
         `Attempting to get step names for Run IDs: [${workflowRunIds}]`
       );
       const idRegex = new RegExp(DISTINCT_ID);
@@ -8426,7 +8426,7 @@ async function runWF(owner, ref, repo, token, workflow, workflowTimeout, wfinput
           if (error6 instanceof Error && error6.message !== "Not Found") {
             throw error6;
           }
-          core4.debug(`Could not identify ID in run: ${id}, continuing...`);
+          core4.info(`Could not identify ID in run: ${id}, continuing...`);
         }
       }
       core4.info(
@@ -8757,7 +8757,7 @@ async function spinUpEKS(meta, token, awskey, awssecret, awstoken) {
         1800,
         input
       );
-      console.log("checking run");
+      console.log("checking run for ID: " + id);
       await runWait("unity-sds", 5e3, "unity-cs-infra", id, 3600, token);
       console.log("wf id: " + id);
     }
