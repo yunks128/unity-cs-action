@@ -86,12 +86,12 @@ async function spinUpProjects(meta: MetaObject, token: string) {
 async function run(): Promise<void> {
     let meta = core.getInput('ucsmetadata');
     let token = core.getInput('token')
-    //let awskey = core.getInput('awskey')
-    //let awstoken = core.getInput('awstoken')
-    //let awssecret = core.getInput('awssecret')
-    let awskey = ""
-    let awstoken = ""
-    let awssecret = ""
+    let awskey = core.getInput('awskey')
+    let awstoken = core.getInput('awstoken')
+    let awssecret = core.getInput('awssecret')
+    //let awskey = ""
+    //let awstoken = ""
+    //let awssecret = ""
     if (meta === undefined || meta.length < 2) {
         meta = core.getInput('eksmetadata')
         if (meta === undefined || meta.length < 2) {

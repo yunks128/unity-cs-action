@@ -8798,9 +8798,9 @@ async function spinUpProjects(meta, token) {
 async function run() {
   let meta = core8.getInput("ucsmetadata");
   let token = core8.getInput("token");
-  let awskey = "";
-  let awstoken = "";
-  let awssecret = "";
+  let awskey = core8.getInput("awskey");
+  let awstoken = core8.getInput("awstoken");
+  let awssecret = core8.getInput("awssecret");
   if (meta === void 0 || meta.length < 2) {
     meta = core8.getInput("eksmetadata");
     if (meta === void 0 || meta.length < 2) {
