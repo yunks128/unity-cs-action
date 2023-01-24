@@ -4,9 +4,9 @@ import { runWF } from "./return-dispatch/main"
 import { runWait } from "./await-remote-run/main";
 import { ActionWorkflowInputs } from "./return-dispatch/action";
 import { exec } from "child_process";
-import { spawnSync } from "child_process";
+import { spawn } from "child_process";
 
-function spinUpEKS(meta: MetaObject, token: string, awskey: string, awssecret: string, awstoken: string) {
+async function spinUpEKS(meta: MetaObject, token: string, awskey: string, awssecret: string, awstoken: string) {
     if (meta.hasOwnProperty("extensions")) {
         console.log("AWS Key: " + awskey)
         var workflowname = "unknown"
@@ -38,18 +38,19 @@ function spinUpEKS(meta: MetaObject, token: string, awskey: string, awssecret: s
         } else {
             console.log("launching act")
             console.log("writing parameters")
-            const ls = spawnSync('act', ['-W', process.env.WORKFLOWPATH + "/" + workflowname, '--input', 'META=\''+JSON.stringify(meta.extensions.kubernetes)+'\'', '-s', 'EKSINSTANCEROLEARN', '-s', 'EKSSERVICEARN']);
-            /*ls.stdout.on('data', function(data) {
+            const ls = spawn('act', ['-W', process.env.WORKFLOWPATH + "/" + workflowname, '--input', 'META=\''+JSON.stringify(meta.extensions.kubernetes)+'\'', '-s', 'EKSINSTANCEROLEARN', '-s', 'EKSSERVICEARN']);
+            ls.stdout.on('data', function(data) {
                 console.log('stdout: ' + data.toString());
             });
 
             ls.stderr.on('data', function(data) {
                 console.log('stderr: ' + data.toString());
             });
-
+            await new Promise( (resolve) => {
             ls.on('exit', function(code) {
                 console.log('child process exited with code ' + code!.toString());
-            });*/
+            });
+            })
             console.log("moving on")
         }
 
@@ -124,7 +125,7 @@ async function run(): Promise<void> {
     } else {
         console.log(`Found meta ${meta}!`);
         const metaobj = JSON.parse(meta)
-        spinUpEKS(metaobj, token, awskey, awssecret, awstoken)
+        await spinUpEKS(metaobj, token, awskey, awssecret, awstoken)
         console.log('spinning up projects')
         spinUpProjects(metaobj, token)
     }
