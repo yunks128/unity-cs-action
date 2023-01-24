@@ -11,8 +11,13 @@ async function spinUpEKS(meta: MetaObject, token: string, awskey: string, awssec
         console.log("AWS Key: " + awskey)
         var workflowname = "unknown"
         let input: ActionWorkflowInputs = <ActionWorkflowInputs>{};
-        if (meta["extensions"].hasOwnProperty("kubernetes") && meta.exectarget != "github")
-        if (meta["extensions"].hasOwnProperty("kubernetes") && awskey != "") {
+        if (meta["extensions"].hasOwnProperty("kubernetes") && meta.exectarget != "github"){
+            workflowname = "deploy_eks_callable.yml";
+            input = {
+                "META": JSON.stringify(meta.extensions.kubernetes)
+            }
+        }
+        else if (meta["extensions"].hasOwnProperty("kubernetes") && awskey != "") {
             workflowname = "deploy_eks_callable.yml";
             input = {
                 "META": JSON.stringify(meta.extensions.kubernetes),
@@ -58,7 +63,7 @@ async function spinUpEKS(meta: MetaObject, token: string, awskey: string, awssec
 
 
     } else {
-
+        
 
     }
 }
