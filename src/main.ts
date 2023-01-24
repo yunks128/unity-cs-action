@@ -124,12 +124,11 @@ async function spinUpProjects(meta: MetaObject, token: string) {
                 ls.stderr.on('data', function(data) {
                     console.log('stderr: ' + data.toString());
                 });
-                await new Promise((resolve) => {
+                return new Promise((resolve) => {
                     ls.on('exit', function(code) {
                         console.log('child process exited with code ' + code!.toString());
                     });
                 })
-                console.log("moving on")
             }
         }
     }
@@ -152,9 +151,10 @@ async function run(): Promise<void> {
     } else {
         console.log(`Found meta ${meta}!`);
         const metaobj = JSON.parse(meta)
-        await spinUpEKS(metaobj, token, awskey, awssecret, awstoken)
-        console.log('spinning up projects')
-        await spinUpProjects(metaobj, token)
+        spinUpEKS(metaobj, token, awskey, awssecret, awstoken).then(r =>{
+            console.log("SPINNING UP PROJECTS")
+            spinUpProjects(metaobj, token)
+        })
     }
     // console.log("Issue created: %s", data.html_url);
     const time = (new Date()).toTimeString();
