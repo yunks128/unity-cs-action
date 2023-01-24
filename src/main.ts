@@ -46,6 +46,7 @@ async function spinUpEKS(meta: MetaObject, token: string, awskey: string, awssec
             await runWait("unity", 60000, "unity-cs-infra", id, 3600, token)
             console.log("wf id: " + id)
         } else {
+            console.log("launching act")
             const ls = spawn('act', ['-W', process.env.WORKFLOWPATH + "/" + workflowname]);
             ls.stdout.on('data', function(data) {
                 console.log('stdout: ' + data.toString());
