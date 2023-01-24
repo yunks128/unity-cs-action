@@ -4,7 +4,7 @@ import { runWF } from "./return-dispatch/main"
 import { runWait } from "./await-remote-run/main";
 import { ActionWorkflowInputs } from "./return-dispatch/action";
 import { exec } from "child_process";
-import { spawn } from "child_process";
+import { spawnSync } from "child_process";
 
 function spinUpEKS(meta: MetaObject, token: string, awskey: string, awssecret: string, awstoken: string) {
     if (meta.hasOwnProperty("extensions")) {
@@ -38,8 +38,8 @@ function spinUpEKS(meta: MetaObject, token: string, awskey: string, awssecret: s
         } else {
             console.log("launching act")
             console.log("writing parameters")
-            const ls = spawn('act', ['-W', process.env.WORKFLOWPATH + "/" + workflowname, '--input', 'META=\''+JSON.stringify(meta.extensions.kubernetes)+'\'', '-s', 'EKSINSTANCEROLEARN', '-s', 'EKSSERVICEARN']);
-            ls.stdout.on('data', function(data) {
+            const ls = spawnSync('act', ['-W', process.env.WORKFLOWPATH + "/" + workflowname, '--input', 'META=\''+JSON.stringify(meta.extensions.kubernetes)+'\'', '-s', 'EKSINSTANCEROLEARN', '-s', 'EKSSERVICEARN']);
+            /*ls.stdout.on('data', function(data) {
                 console.log('stdout: ' + data.toString());
             });
 
@@ -49,7 +49,7 @@ function spinUpEKS(meta: MetaObject, token: string, awskey: string, awssecret: s
 
             ls.on('exit', function(code) {
                 console.log('child process exited with code ' + code!.toString());
-            });
+            });*/
             console.log("moving on")
         }
 
