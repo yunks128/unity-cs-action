@@ -6,7 +6,7 @@ import { ActionWorkflowInputs } from "./return-dispatch/action";
 import { exec } from "child_process";
 import { spawn } from "child_process";
 
-async function spinUpEKS(meta: MetaObject, token: string, awskey: string, awssecret: string, awstoken: string) {
+function spinUpEKS(meta: MetaObject, token: string, awskey: string, awssecret: string, awstoken: string) {
     if (meta.hasOwnProperty("extensions")) {
         console.log("AWS Key: " + awskey)
         var workflowname = "unknown"
@@ -34,21 +34,10 @@ async function spinUpEKS(meta: MetaObject, token: string, awskey: string, awssec
         }
         console.log("call eks workflow with key")
         if (meta.exectarget == "github") {
-            let id: number = await runWF("unity-sds",
-                "refs/heads/main",
-                "unity-cs-infra",
-                token,
-                workflowname,
-                1800,
-                input
-            )
-            console.log("checking run")
-            await runWait("unity", 60000, "unity-cs-infra", id, 3600, token)
-            console.log("wf id: " + id)
+            spinUpEKSGithub(token, workflowname, input)
         } else {
             console.log("launching act")
             console.log("writing parameters")
-
             const ls = spawn('act', ['-W', process.env.WORKFLOWPATH + "/" + workflowname, '--input', 'META=\''+JSON.stringify(meta.extensions.kubernetes)+'\'', '-s', 'EKSINSTANCEROLEARN', '-s', 'EKSSERVICEARN']);
             ls.stdout.on('data', function(data) {
                 console.log('stdout: ' + data.toString());
@@ -69,6 +58,20 @@ async function spinUpEKS(meta: MetaObject, token: string, awskey: string, awssec
         
 
     }
+}
+
+async function spinUpEKSGithub(token: string, workflowname: string, input: ActionWorkflowInputs){
+    let id: number = await runWF("unity-sds",
+                                 "refs/heads/main",
+                                 "unity-cs-infra",
+                                 token,
+                                 workflowname,
+                                 1800,
+                                 input
+                                )
+    console.log("checking run")
+    await runWait("unity", 60000, "unity-cs-infra", id, 3600, token)
+    console.log("wf id: " + id)
 }
 
 async function spinUpProjects(meta: MetaObject, token: string) {
@@ -119,7 +122,7 @@ async function run(): Promise<void> {
     } else {
         console.log(`Found meta ${meta}!`);
         const metaobj = JSON.parse(meta)
-        await spinUpEKS(metaobj, token, awskey, awssecret, awstoken)
+        spinUpEKS(metaobj, token, awskey, awssecret, awstoken)
         await spinUpProjects(metaobj, token)
     }
     // console.log("Issue created: %s", data.html_url);
