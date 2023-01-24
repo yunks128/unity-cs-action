@@ -11,7 +11,7 @@ async function spinUpEKS(meta: MetaObject, token: string, awskey: string, awssec
         console.log("AWS Key: " + awskey)
         var workflowname = "unknown"
         let input: ActionWorkflowInputs = <ActionWorkflowInputs>{};
-        if (meta["extensions"].hasOwnProperty("kubernetes") && meta.exectarget != "github"){
+        if (meta["extensions"].hasOwnProperty("kubernetes") && meta.exectarget != "github") {
             workflowname = "deploy_eks_callable.yml";
             input = {
                 "META": JSON.stringify(meta.extensions.kubernetes)
@@ -38,7 +38,7 @@ async function spinUpEKS(meta: MetaObject, token: string, awskey: string, awssec
         } else {
             console.log("launching act")
             console.log("writing parameters")
-            const ls = spawn('act', ['-W', process.env.WORKFLOWPATH + "/" + workflowname, '--input', 'META=\''+JSON.stringify(meta.extensions.kubernetes)+'\'', '-s', 'EKSINSTANCEROLEARN', '-s', 'EKSSERVICEARN']);
+            const ls = spawn('act', ['-W', process.env.WORKFLOWPATH + "/" + workflowname, '--input', 'META=\'' + JSON.stringify(meta.extensions.kubernetes) + '\'', '-s', 'EKSINSTANCEROLEARN', '-s', 'EKSSERVICEARN']);
             ls.stdout.on('data', function(data) {
                 console.log('stdout: ' + data.toString());
             });
@@ -46,10 +46,10 @@ async function spinUpEKS(meta: MetaObject, token: string, awskey: string, awssec
             ls.stderr.on('data', function(data) {
                 console.log('stderr: ' + data.toString());
             });
-            await new Promise( (resolve) => {
-            ls.on('exit', function(code) {
-                console.log('child process exited with code ' + code!.toString());
-            });
+            await new Promise((resolve) => {
+                ls.on('exit', function(code) {
+                    console.log('child process exited with code ' + code!.toString());
+                });
             })
             console.log("moving on")
         }
@@ -57,53 +57,73 @@ async function spinUpEKS(meta: MetaObject, token: string, awskey: string, awssec
 
 
     } else {
-        
+
 
     }
 }
 
-async function spinUpEKSGithub(token: string, workflowname: string, input: ActionWorkflowInputs){
+async function spinUpEKSGithub(token: string, workflowname: string, input: ActionWorkflowInputs) {
     let id: number = await runWF("unity-sds",
-                                 "refs/heads/main",
-                                 "unity-cs-infra",
-                                 token,
-                                 workflowname,
-                                 1800,
-                                 input
-                                )
+        "refs/heads/main",
+        "unity-cs-infra",
+        token,
+        workflowname,
+        1800,
+        input
+    )
     console.log("checking run")
     await runWait("unity", 60000, "unity-cs-infra", id, 3600, token)
     console.log("wf id: " + id)
 }
 
-function spinUpProjects(meta: MetaObject, token: string) {
+async function spinUpProjects(meta: MetaObject, token: string) {
     if (meta["services"]) {
         for (const item of meta["services"]) {
-            const index = meta["services"].indexOf(item);
-            console.log("Service found")
-            console.log(item, index);
-            console.log("call service workflow")
-            const input: ActionWorkflowInputs = {
-                "deploymentProject": "UNITY",
-                "deploymentStage": "DEV",
-                "deploymentOwner": "tom",
-                "eksClusterName": meta.extensions.kubernetes.clustername,
-                "deploymentTarget": "mcp",
-                "sourceRepository": item.source,
-                "sourceBranch": item.branch
+            if (meta.exectarget == "github") {
+                const index = meta["services"].indexOf(item);
+                console.log("Service found")
+                console.log(item, index);
+                console.log("call service workflow")
+                const input: ActionWorkflowInputs = {
+                    "deploymentProject": "UNITY",
+                    "deploymentStage": "DEV",
+                    "deploymentOwner": "tom",
+                    "eksClusterName": meta.extensions.kubernetes.clustername,
+                    "deploymentTarget": "mcp",
+                    "sourceRepository": item.source,
+                    "sourceBranch": item.branch
+                }
+                /*let id: number = await runWF("unity-sds",
+                    "refs/heads/main",
+                    "unity-cs-infra",
+                    token,
+                    "deployment_oidc.yml",
+                    1800,
+                    input
+                )
+                console.log("checking run")
+                await runWait("unity-sds", 60000, "unity-cs-infra", id, 3600, token)
+                console.log("wf id: " + id)*/
+                console.log("launching service")
+            } else {
+                console.log("launching act")
+                console.log("writing parameters")
+                let workflowname = "deployment_oidc"
+                const ls = spawn('act', ['-W', process.env.WORKFLOWPATH + "/" + workflowname, '--input', 'META=\'' + JSON.stringify(meta.extensions.kubernetes) + '\'', '-s', 'EKSINSTANCEROLEARN', '-s', 'EKSSERVICEARN', '-s', 'AWS_REGION']);
+                ls.stdout.on('data', function(data) {
+                    console.log('stdout: ' + data.toString());
+                });
+
+                ls.stderr.on('data', function(data) {
+                    console.log('stderr: ' + data.toString());
+                });
+                await new Promise((resolve) => {
+                    ls.on('exit', function(code) {
+                        console.log('child process exited with code ' + code!.toString());
+                    });
+                })
+                console.log("moving on")
             }
-            /*let id: number = await runWF("unity-sds",
-                "refs/heads/main",
-                "unity-cs-infra",
-                token,
-                "deployment_oidc.yml",
-                1800,
-                input
-            )
-            console.log("checking run")
-            await runWait("unity-sds", 60000, "unity-cs-infra", id, 3600, token)
-            console.log("wf id: " + id)*/
-            console.log("launching service")
         }
     }
 }
@@ -127,7 +147,7 @@ async function run(): Promise<void> {
         const metaobj = JSON.parse(meta)
         await spinUpEKS(metaobj, token, awskey, awssecret, awstoken)
         console.log('spinning up projects')
-        spinUpProjects(metaobj, token)
+        await spinUpProjects(metaobj, token)
     }
     // console.log("Issue created: %s", data.html_url);
     const time = (new Date()).toTimeString();
