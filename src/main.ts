@@ -111,11 +111,12 @@ async function spinUpProjects(meta: MetaObject, token: string) {
                 let workflowname = "software_deployment.yml"
                 const ls = spawn('act', ['-W', process.env.WORKFLOWPATH + "/" + workflowname, 'workflow_dispatch',
                                          '--input', 'deploymentOwner=' + meta.extensions.kubernetes.clustername,
-                                         '--input', 'sourceRespository=' + item.source,
+                                         '--input', 'sourceRepository=' + item.source,
                                          '--input', 'sourceBranch=' + item.branch,
                                          '--input', 'eksClusterName=' + meta.extensions.kubernetes.clustername,
                                          '--input', 'awsConnection=iam',
-                                         '-s', 'EKSINSTANCEROLEARN', '-s', 'EKSSERVICEARN', '-s', 'AWS_REGION']);
+                                         '-s', 'EKSINSTANCEROLEARN', '-s', 'EKSSERVICEARN', '-s', 'AWS_REGION',
+                                         '-s', 'GITHUB_TOKEN']);
                 ls.stdout.on('data', function(data) {
                     console.log('stdout: ' + data.toString());
                 });
