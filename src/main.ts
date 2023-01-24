@@ -48,7 +48,8 @@ async function spinUpEKS(meta: MetaObject, token: string, awskey: string, awssec
         } else {
             console.log("launching act")
             console.log("writing parameters")
-            const ls = spawn('act', ['-W', process.env.WORKFLOWPATH + "/" + workflowname, '--input', 'META='+JSON.stringify(meta.extensions.kubernetes)]);
+
+            const ls = spawn('act', ['-W', process.env.WORKFLOWPATH + "/" + workflowname, '--input', 'META=\''+JSON.stringify(meta.extensions.kubernetes)+'\'', '-s', 'EKSINSTANCEROLEARN', '-s', 'EKSSERVICEARN']);
             ls.stdout.on('data', function(data) {
                 console.log('stdout: ' + data.toString());
             });
