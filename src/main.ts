@@ -109,7 +109,7 @@ async function spinUpProjects(meta: MetaObject, token: string) {
                 console.log("launching act")
                 console.log("writing parameters")
                 let workflowname = "software_deployment.yml"
-                const ls = spawn('act', ['-W', process.env.WORKFLOWPATH + "/" + workflowname,
+                const ls = spawn('act', ['-W', process.env.WORKFLOWPATH + "/" + workflowname, 'workflow_dispatch',
                                          '--input', 'deploymentOwner=' + meta.extensions.kubernetes.clustername,
                                          '--input', 'sourceRespository=' + item.source,
                                          '--input', 'sourceBranch=' + item.branch,
