@@ -108,7 +108,7 @@ async function spinUpProjects(meta: MetaObject, token: string) {
             } else {
                 console.log("launching act")
                 console.log("writing parameters")
-                let workflowname = "deployment_oidc"
+                let workflowname = "software_deployment.yml"
                 const ls = spawn('act', ['-W', process.env.WORKFLOWPATH + "/" + workflowname, '--input', 'META=\'' + JSON.stringify(meta.extensions.kubernetes) + '\'', '-s', 'EKSINSTANCEROLEARN', '-s', 'EKSSERVICEARN', '-s', 'AWS_REGION']);
                 ls.stdout.on('data', function(data) {
                     console.log('stdout: ' + data.toString());
