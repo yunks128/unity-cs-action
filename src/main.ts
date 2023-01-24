@@ -50,6 +50,7 @@ function spinUpEKS(meta: MetaObject, token: string, awskey: string, awssecret: s
             ls.on('exit', function(code) {
                 console.log('child process exited with code ' + code!.toString());
             });
+            console.log("moving on")
         }
 
 
@@ -74,7 +75,7 @@ async function spinUpEKSGithub(token: string, workflowname: string, input: Actio
     console.log("wf id: " + id)
 }
 
-async function spinUpProjects(meta: MetaObject, token: string) {
+function spinUpProjects(meta: MetaObject, token: string) {
     if (meta["services"]) {
         for (const item of meta["services"]) {
             const index = meta["services"].indexOf(item);
@@ -90,7 +91,7 @@ async function spinUpProjects(meta: MetaObject, token: string) {
                 "sourceRepository": item.source,
                 "sourceBranch": item.branch
             }
-            let id: number = await runWF("unity-sds",
+            /*let id: number = await runWF("unity-sds",
                 "refs/heads/main",
                 "unity-cs-infra",
                 token,
@@ -100,7 +101,8 @@ async function spinUpProjects(meta: MetaObject, token: string) {
             )
             console.log("checking run")
             await runWait("unity-sds", 60000, "unity-cs-infra", id, 3600, token)
-            console.log("wf id: " + id)
+            console.log("wf id: " + id)*/
+            console.log("launching service")
         }
     }
 }
@@ -123,7 +125,8 @@ async function run(): Promise<void> {
         console.log(`Found meta ${meta}!`);
         const metaobj = JSON.parse(meta)
         spinUpEKS(metaobj, token, awskey, awssecret, awstoken)
-        await spinUpProjects(metaobj, token)
+        console.log('spinning up projects')
+        spinUpProjects(metaobj, token)
     }
     // console.log("Issue created: %s", data.html_url);
     const time = (new Date()).toTimeString();
