@@ -1,55 +1,65 @@
 import * as core from "@actions/core";
-import {MetaObject} from "./meta";
-import {runWF} from "./return-dispatch/main"
-import {runWait} from "./await-remote-run/main";
-import {ActionWorkflowInputs} from "./return-dispatch/action";
+import { MetaObject } from "./meta";
+import { runWF } from "./return-dispatch/main"
+import { runWait } from "./await-remote-run/main";
+import { ActionWorkflowInputs } from "./return-dispatch/action";
+import { exec } from "child_process";
+import { spawn } from "child_process";
 
 async function spinUpEKS(meta: MetaObject, token: string, awskey: string, awssecret: string, awstoken: string) {
     if (meta.hasOwnProperty("extensions")) {
-        console.log("AWS Key: "+awskey)
+        console.log("AWS Key: " + awskey)
+        var workflowname = "unknown"
+        let input: ActionWorkflowInputs = <ActionWorkflowInputs>{};
         if (meta["extensions"].hasOwnProperty("kubernetes") && awskey != "") {
-            console.log("call eks workflow with key")
-            const input: ActionWorkflowInputs = {
-            "META":JSON.stringify(meta.extensions.kubernetes),
+            workflowname = "deploy_eks_callable.yml";
+            input = {
+                "META": JSON.stringify(meta.extensions.kubernetes),
                 "KEY": awskey,
                 "SECRET": awssecret,
                 "TOKEN": awstoken,
             }
-            let id: number = await runWF("unity-sds",
-                "refs/heads/main",
-                "unity-cs-infra",
-                token,
-                "deploy_eks_callable.yml",
-                1800,
-                input
-                )
-            console.log("checking run")
-            await runWait("unity-sds", 60000, "unity-cs-infra", id, 3600, token)
-            console.log("wf id: " + id)
-        } else if(meta["extensions"].hasOwnProperty("kubernetes")){
-            console.log("call eks oidc workflow")
-            const input: ActionWorkflowInputs = {
-                "META":JSON.stringify(meta.extensions.kubernetes),
+        } else if (meta["extensions"].hasOwnProperty("kubernetes")) {
+            workflowname = "deploy_eks_callable_oidc.yml";
+            input = {
+                "META": JSON.stringify(meta.extensions.kubernetes),
             }
+
+        }
+        console.log("call eks workflow with key")
+        if (meta.exectarget == "github") {
             let id: number = await runWF("unity-sds",
                 "refs/heads/main",
                 "unity-cs-infra",
                 token,
-                "deploy_eks_callable_oidc.yml",
+                workflowname,
                 1800,
                 input
             )
-            console.log("checking run for ID: "+id)
-            await runWait("unity-sds", 60000, "unity-cs-infra", id, 3600, token)
+            console.log("checking run")
+            await runWait("unity", 60000, "unity-cs-infra", id, 3600, token)
             console.log("wf id: " + id)
+        } else {
+            const ls = spawn('act', ['-W', process.env.WORKFLOWPATH + "/" + workflowname]);
+            ls.stdout.on('data', function(data) {
+                console.log('stdout: ' + data.toString());
+            });
+
+            ls.stderr.on('data', function(data) {
+                console.log('stderr: ' + data.toString());
+            });
+
+            ls.on('exit', function(code) {
+                console.log('child process exited with code ' + code!.toString());
+            });
         }
 
 
-    } else
-{
+
+    } else {
 
 
-}
+    }
 }
 
 async function spinUpProjects(meta: MetaObject, token: string) {
@@ -97,11 +107,12 @@ async function run(): Promise<void> {
         if (meta === undefined || meta.length < 2) {
             core.setFailed('No metadata found')
         }
+    } else {
+        console.log(`Found meta ${meta}!`);
+        const metaobj = JSON.parse(meta)
+        await spinUpEKS(metaobj, token, awskey, awssecret, awstoken)
+        await spinUpProjects(metaobj, token)
     }
-    console.log(`Found meta ${meta}!`);
-    const metaobj = JSON.parse(meta)
-    await spinUpEKS(metaobj, token, awskey, awssecret, awstoken)
-    await spinUpProjects(metaobj, token)
     // console.log("Issue created: %s", data.html_url);
     const time = (new Date()).toTimeString();
     core.setOutput("time", time);

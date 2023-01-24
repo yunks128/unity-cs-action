@@ -8720,46 +8720,51 @@ async function runWait(owner, pollInterval, repo, runId, timeout, token) {
 }
 
 // src/main.ts
+var import_child_process = require("child_process");
 async function spinUpEKS(meta, token, awskey, awssecret, awstoken) {
   if (meta.hasOwnProperty("extensions")) {
     console.log("AWS Key: " + awskey);
+    var workflowname = "unknown";
+    let input = {};
     if (meta["extensions"].hasOwnProperty("kubernetes") && awskey != "") {
-      console.log("call eks workflow with key");
-      const input = {
+      workflowname = "deploy_eks_callable.yml";
+      input = {
         "META": JSON.stringify(meta.extensions.kubernetes),
         "KEY": awskey,
         "SECRET": awssecret,
         "TOKEN": awstoken
       };
+    } else if (meta["extensions"].hasOwnProperty("kubernetes")) {
+      workflowname = "deploy_eks_callable_oidc.yml";
+      input = {
+        "META": JSON.stringify(meta.extensions.kubernetes)
+      };
+    }
+    console.log("call eks workflow with key");
+    if (meta.exectarget == "github") {
       let id = await runWF(
         "unity-sds",
         "refs/heads/main",
         "unity-cs-infra",
         token,
-        "deploy_eks_callable.yml",
+        workflowname,
         1800,
         input
       );
       console.log("checking run");
-      await runWait("unity-sds", 6e4, "unity-cs-infra", id, 3600, token);
+      await runWait("unity", 6e4, "unity-cs-infra", id, 3600, token);
       console.log("wf id: " + id);
-    } else if (meta["extensions"].hasOwnProperty("kubernetes")) {
-      console.log("call eks oidc workflow");
-      const input = {
-        "META": JSON.stringify(meta.extensions.kubernetes)
-      };
-      let id = await runWF(
-        "unity-sds",
-        "refs/heads/main",
-        "unity-cs-infra",
-        token,
-        "deploy_eks_callable_oidc.yml",
-        1800,
-        input
-      );
-      console.log("checking run for ID: " + id);
-      await runWait("unity-sds", 6e4, "unity-cs-infra", id, 3600, token);
-      console.log("wf id: " + id);
+    } else {
+      const ls = (0, import_child_process.spawn)("act", ["-W", process.env.WORKFLOWPATH + "/" + workflowname]);
+      ls.stdout.on("data", function(data) {
+        console.log("stdout: " + data.toString());
+      });
+      ls.stderr.on("data", function(data) {
+        console.log("stderr: " + data.toString());
+      });
+      ls.on("exit", function(code) {
+        console.log("child process exited with code " + code.toString());
+      });
     }
   } else {
   }
@@ -8806,11 +8811,12 @@ async function run() {
     if (meta === void 0 || meta.length < 2) {
       core8.setFailed("No metadata found");
     }
+  } else {
+    console.log(`Found meta ${meta}!`);
+    const metaobj = JSON.parse(meta);
+    await spinUpEKS(metaobj, token, awskey, awssecret, awstoken);
+    await spinUpProjects(metaobj, token);
   }
-  console.log(`Found meta ${meta}!`);
-  const metaobj = JSON.parse(meta);
-  await spinUpEKS(metaobj, token, awskey, awssecret, awstoken);
-  await spinUpProjects(metaobj, token);
   const time = new Date().toTimeString();
   core8.setOutput("time", time);
 }

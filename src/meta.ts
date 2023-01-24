@@ -28,4 +28,5 @@ export interface MetaObject {
     deploymentName: string;
     services: Service[];
     extensions: Extensions;
+    exectarget: string;
 }
