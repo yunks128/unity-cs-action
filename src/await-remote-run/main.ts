@@ -49,8 +49,7 @@ export async function runWait(owner: string, pollInterval: number, repo: string,
 
         core.info(
             `Awaiting completion of Workflow Run ${config.runId}...\n` +
-            `  ID: ${config.runId}\n` +
-            `  URL: ${await getWorkflowRunActiveJobUrl(config.runId)}`
+            `  ID: ${config.runId}\n`
         );
 
         while (elapsedTime < timeoutMs) {

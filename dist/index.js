@@ -8599,36 +8599,6 @@ async function getWorkflowRunFailedJobs(runId) {
     throw error6;
   }
 }
-async function getWorkflowRunActiveJobUrl(runId) {
-  try {
-    core6.info("looking up job " + runId);
-    const response = await getWorkflowRunJobs(runId);
-    const fetchedInProgressJobs = response.data.jobs.filter(
-      (job) => job.status === "in_progress"
-    );
-    if (fetchedInProgressJobs.length <= 0) {
-      core6.warning(`Failed to find in_progress Jobs for Workflow Run ${runId}`);
-      return "Unable to fetch URL";
-    }
-    core6.debug(
-      `Fetched Jobs for Run:
-  Repository: ${config2.owner}/${config2.repo}
-  Run ID: ${config2.runId}
-  Jobs (in_progress): [${fetchedInProgressJobs.map(
-        (job) => job.name
-      )}]`
-    );
-    return fetchedInProgressJobs[0].html_url || "GitHub failed to return the URL";
-  } catch (error6) {
-    if (error6 instanceof Error) {
-      core6.error(
-        `getWorkflowRunActiveJobUrl: An unexpected error has occurred: ${error6.message}`
-      );
-      error6.stack && core6.debug(error6.stack);
-    }
-    throw error6;
-  }
-}
 
 // src/await-remote-run/main.ts
 async function logFailureDetails(runId) {
@@ -8668,7 +8638,7 @@ async function runWait(owner, pollInterval, repo, runId, timeout, token) {
     core7.info(
       `Awaiting completion of Workflow Run ${config3.runId}...
   ID: ${config3.runId}
-  URL: ${await getWorkflowRunActiveJobUrl(config3.runId)}`
+`
     );
     while (elapsedTime < timeoutMs) {
       attemptNo++;
