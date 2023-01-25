@@ -9,16 +9,14 @@ import { spawn } from "child_process";
 async function spinUpEKS(meta: MetaObject, token: string, awskey: string, awssecret: string, awstoken: string) {
     if (meta.hasOwnProperty("extensions")) {
         console.log("AWS Key: " + awskey)
-        var workflowname = "unknown"
+        var workflowname = "deploy_eks.yml"
         let input: ActionWorkflowInputs = <ActionWorkflowInputs>{};
         if (meta["extensions"].hasOwnProperty("kubernetes") && meta.exectarget != "github") {
-            workflowname = "deploy_eks_callable.yml";
             input = {
                 "META": JSON.stringify(meta.extensions.kubernetes)
             }
         }
         else if (meta["extensions"].hasOwnProperty("kubernetes") && awskey != "") {
-            workflowname = "deploy_eks_callable.yml";
             input = {
                 "META": JSON.stringify(meta.extensions.kubernetes),
                 "KEY": awskey,
@@ -26,7 +24,6 @@ async function spinUpEKS(meta: MetaObject, token: string, awskey: string, awssec
                 "TOKEN": awstoken,
             }
         } else if (meta["extensions"].hasOwnProperty("kubernetes")) {
-            workflowname = "deploy_eks_callable_oidc.yml";
             input = {
                 "META": JSON.stringify(meta.extensions.kubernetes),
             }
@@ -38,7 +35,8 @@ async function spinUpEKS(meta: MetaObject, token: string, awskey: string, awssec
         } else {
             console.log("launching act")
             console.log("writing parameters")
-            const ls = spawn('act', ['-W', process.env.WORKFLOWPATH + "/" + workflowname, '--input', 'META=\'' + JSON.stringify(meta.extensions.kubernetes) + '\'', '-s', 'EKSINSTANCEROLEARN', '-s', 'EKSSERVICEARN']);
+            const ls = spawn('act', ['-W', process.env.WORKFLOWPATH + "/" + workflowname,
+                                     '--input', 'META=\'' + JSON.stringify(meta.extensions.kubernetes) + '\'']);
             ls.stdout.on('data', function(data) {
                 console.log('stdout: ' + data.toString());
             });
@@ -52,10 +50,7 @@ async function spinUpEKS(meta: MetaObject, token: string, awskey: string, awssec
                     return resolve("done")
                 });
             })
-            console.log("moving on")
         }
-
-
 
     } else {
 
@@ -118,8 +113,7 @@ async function spinUpProjects(meta: MetaObject, token: string) {
                         '--input', 'sourceBranch=' + item.branch,
                         '--input', 'eksClusterName=' + meta.extensions.kubernetes.clustername,
                         '--input', 'awsConnection=iam',
-                        '-s', 'EKSINSTANCEROLEARN', '-s', 'EKSSERVICEARN', '-s', 'AWS_REGION',
-                        '-s', 'GITHUB_TOKEN']);
+                        '-s', 'GITHUB_TOKEN', '--env-file', '/tmp/my.env']);
                     //const ls = spawn('ls', ['-al','/tmp'])
                     ls.stdout.on('data', function(data) {
                         console.log('stdout: ' + data.toString());
