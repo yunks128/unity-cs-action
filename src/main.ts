@@ -127,6 +127,7 @@ async function spinUpProjects(meta: MetaObject, token: string) {
                 return new Promise((resolve) => {
                     ls.on('exit', function(code) {
                         console.log('child process exited with code ' + code!.toString());
+                        return resolve("done")
                     });
                 })
             }
