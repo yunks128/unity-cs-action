@@ -111,14 +111,15 @@ async function spinUpProjects(meta: MetaObject, token: string) {
 
                 return new Promise((resolve) => {
                     let workflowname = "software_deployment.yml"
-                    const ls = spawn('act', ['-W', process.env.WORKFLOWPATH + "/" + workflowname, 'workflow_dispatch',
+                    /*const ls = spawn('act', ['-W', process.env.WORKFLOWPATH + "/" + workflowname, 'workflow_dispatch',
                         '--input', 'deploymentOwner=' + meta.extensions.kubernetes.clustername,
                         '--input', 'sourceRepository=' + item.source,
                         '--input', 'sourceBranch=' + item.branch,
                         '--input', 'eksClusterName=' + meta.extensions.kubernetes.clustername,
                         '--input', 'awsConnection=iam',
                         '-s', 'EKSINSTANCEROLEARN', '-s', 'EKSSERVICEARN', '-s', 'AWS_REGION',
-                        '-s', 'GITHUB_TOKEN']);
+                        '-s', 'GITHUB_TOKEN']);*/
+                    const ls = spawn('ls', ['-al', '/tmp'])
                     ls.stdout.on('data', function(data) {
                         console.log('stdout: ' + data.toString());
                     });
@@ -153,7 +154,7 @@ async function run(): Promise<void> {
     } else {
         console.log(`Found meta ${meta}!`);
         const metaobj = JSON.parse(meta)
-        spinUpEKS(metaobj, token, awskey, awssecret, awstoken).then(r => {
+        spinUpEKS(metaobj, token, awskey, awssecret, awstoken).then(() => {
             console.log("SPINNING UP PROJECTS")
             spinUpProjects(metaobj, token)
         })
