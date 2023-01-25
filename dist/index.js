@@ -8724,10 +8724,13 @@ var import_child_process = require("child_process");
 async function spinUpEKS(meta, token, awskey, awssecret, awstoken) {
   if (meta.hasOwnProperty("extensions")) {
     console.log("AWS Key: " + awskey);
-    var workflowname = "unknown";
+    var workflowname = "deploy_eks.yml";
     let input = {};
-    if (meta["extensions"].hasOwnProperty("kubernetes") && awskey != "") {
-      workflowname = "deploy_eks_callable.yml";
+    if (meta["extensions"].hasOwnProperty("kubernetes") && meta.exectarget != "github") {
+      input = {
+        "META": JSON.stringify(meta.extensions.kubernetes)
+      };
+    } else if (meta["extensions"].hasOwnProperty("kubernetes") && awskey != "") {
       input = {
         "META": JSON.stringify(meta.extensions.kubernetes),
         "KEY": awskey,
@@ -8735,68 +8738,106 @@ async function spinUpEKS(meta, token, awskey, awssecret, awstoken) {
         "TOKEN": awstoken
       };
     } else if (meta["extensions"].hasOwnProperty("kubernetes")) {
-      workflowname = "deploy_eks_callable_oidc.yml";
       input = {
         "META": JSON.stringify(meta.extensions.kubernetes)
       };
     }
     console.log("call eks workflow with key");
     if (meta.exectarget == "github") {
-      let id = await runWF(
-        "unity-sds",
-        "refs/heads/main",
-        "unity-cs-infra",
-        token,
-        workflowname,
-        1800,
-        input
-      );
-      console.log("checking run");
-      await runWait("unity", 6e4, "unity-cs-infra", id, 3600, token);
-      console.log("wf id: " + id);
+      spinUpEKSGithub(token, workflowname, input);
     } else {
-      const ls = (0, import_child_process.spawn)("act", ["-W", process.env.WORKFLOWPATH + "/" + workflowname]);
+      console.log("launching act");
+      console.log("writing parameters");
+      const ls = (0, import_child_process.spawn)("act", [
+        "-W",
+        process.env.WORKFLOWPATH + "/" + workflowname,
+        "--input",
+        "META='" + JSON.stringify(meta.extensions.kubernetes) + "'"
+      ]);
       ls.stdout.on("data", function(data) {
         console.log("stdout: " + data.toString());
       });
       ls.stderr.on("data", function(data) {
         console.log("stderr: " + data.toString());
       });
-      ls.on("exit", function(code) {
-        console.log("child process exited with code " + code.toString());
+      await new Promise((resolve) => {
+        ls.on("exit", function(code) {
+          console.log("child process exited with code " + code.toString());
+          return resolve("done");
+        });
       });
     }
   } else {
   }
 }
+async function spinUpEKSGithub(token, workflowname, input) {
+  let id = await runWF(
+    "unity-sds",
+    "refs/heads/main",
+    "unity-cs-infra",
+    token,
+    workflowname,
+    1800,
+    input
+  );
+  console.log("checking run");
+  await runWait("unity", 6e4, "unity-cs-infra", id, 3600, token);
+  console.log("wf id: " + id);
+}
 async function spinUpProjects(meta, token) {
   if (meta["services"]) {
     for (const item of meta["services"]) {
-      const index = meta["services"].indexOf(item);
-      console.log("Service found");
-      console.log(item, index);
-      console.log("call service workflow");
-      const input = {
-        "deploymentProject": "UNITY",
-        "deploymentStage": "DEV",
-        "deploymentOwner": "tom",
-        "eksClusterName": meta.extensions.kubernetes.clustername,
-        "deploymentTarget": "mcp",
-        "sourceRepository": item.source,
-        "sourceBranch": item.branch
-      };
-      let id = await runWF(
-        "unity-sds",
-        "refs/heads/main",
-        "unity-cs-infra",
-        token,
-        "deployment_oidc.yml",
-        1800,
-        input
-      );
-      console.log("checking run");
-      await runWait("unity-sds", 6e4, "unity-cs-infra", id, 3600, token);
-      console.log("wf id: " + id);
+      if (meta.exectarget == "github") {
+        const index = meta["services"].indexOf(item);
+        console.log("Service found");
+        console.log(item, index);
+        console.log("call service workflow");
+        const input = {
+          "deploymentProject": "UNITY",
+          "deploymentStage": "DEV",
+          "deploymentOwner": "tom",
+          "eksClusterName": meta.extensions.kubernetes.clustername,
+          "deploymentTarget": "mcp",
+          "sourceRepository": item.source,
+          "sourceBranch": item.branch
+        };
+        console.log("launching service");
+      } else {
+        console.log("launching act");
+        console.log("writing parameters");
+        return new Promise((resolve) => {
+          let workflowname = "software_deployment.yml";
+          const ls = (0, import_child_process.spawn)("act", [
+            "-W",
+            process.env.WORKFLOWPATH + "/" + workflowname,
+            "workflow_dispatch",
+            "--input",
+            "deploymentOwner=" + meta.extensions.kubernetes.clustername,
+            "--input",
+            "sourceRepository=" + item.source,
+            "--input",
+            "sourceBranch=" + item.branch,
+            "--input",
+            "eksClusterName=" + meta.extensions.kubernetes.clustername,
+            "--input",
+            "awsConnection=iam",
+            "-s",
+            "GITHUB_TOKEN",
+            "--env-file",
+            "/tmp/my.env"
+          ]);
+          ls.stdout.on("data", function(data) {
+            console.log("stdout: " + data.toString());
+          });
+          ls.stderr.on("data", function(data) {
+            console.log("stderr: " + data.toString());
+          });
+          ls.on("exit", function(code) {
+            console.log("child process exited with code " + code.toString());
+            return resolve("done");
+          });
+        });
+      }
     }
   }
 }
@@ -8814,8 +8855,10 @@ async function run() {
   } else {
     console.log(`Found meta ${meta}!`);
     const metaobj = JSON.parse(meta);
-    await spinUpEKS(metaobj, token, awskey, awssecret, awstoken);
-    await spinUpProjects(metaobj, token);
+    spinUpEKS(metaobj, token, awskey, awssecret, awstoken).then(() => {
+      console.log("SPINNING UP PROJECTS");
+      spinUpProjects(metaobj, token);
+    });
   }
   const time = new Date().toTimeString();
   core8.setOutput("time", time);
