@@ -49,6 +49,7 @@ async function spinUpEKS(meta: MetaObject, token: string, awskey: string, awssec
             await new Promise((resolve) => {
                 ls.on('exit', function(code) {
                     console.log('child process exited with code ' + code!.toString());
+                    return resolve("done")
                 });
             })
             console.log("moving on")
@@ -111,15 +112,15 @@ async function spinUpProjects(meta: MetaObject, token: string) {
 
                 return new Promise((resolve) => {
                     let workflowname = "software_deployment.yml"
-                    /*const ls = spawn('act', ['-W', process.env.WORKFLOWPATH + "/" + workflowname, 'workflow_dispatch',
+                    const ls = spawn('act', ['-W', process.env.WORKFLOWPATH + "/" + workflowname, 'workflow_dispatch',
                         '--input', 'deploymentOwner=' + meta.extensions.kubernetes.clustername,
                         '--input', 'sourceRepository=' + item.source,
                         '--input', 'sourceBranch=' + item.branch,
                         '--input', 'eksClusterName=' + meta.extensions.kubernetes.clustername,
                         '--input', 'awsConnection=iam',
                         '-s', 'EKSINSTANCEROLEARN', '-s', 'EKSSERVICEARN', '-s', 'AWS_REGION',
-                        '-s', 'GITHUB_TOKEN']);*/
-                    const ls = spawn('ls', ['-al', '/tmp'])
+                        '-s', 'GITHUB_TOKEN']);
+                    //const ls = spawn('ls', ['-al','/tmp'])
                     ls.stdout.on('data', function(data) {
                         console.log('stdout: ' + data.toString());
                     });
