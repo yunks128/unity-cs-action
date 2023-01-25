@@ -108,23 +108,24 @@ async function spinUpProjects(meta: MetaObject, token: string) {
             } else {
                 console.log("launching act")
                 console.log("writing parameters")
-                let workflowname = "software_deployment.yml"
-                const ls = spawn('act', ['-W', process.env.WORKFLOWPATH + "/" + workflowname, 'workflow_dispatch',
-                                         '--input', 'deploymentOwner=' + meta.extensions.kubernetes.clustername,
-                                         '--input', 'sourceRepository=' + item.source,
-                                         '--input', 'sourceBranch=' + item.branch,
-                                         '--input', 'eksClusterName=' + meta.extensions.kubernetes.clustername,
-                                         '--input', 'awsConnection=iam',
-                                         '-s', 'EKSINSTANCEROLEARN', '-s', 'EKSSERVICEARN', '-s', 'AWS_REGION',
-                                         '-s', 'GITHUB_TOKEN']);
-                ls.stdout.on('data', function(data) {
-                    console.log('stdout: ' + data.toString());
-                });
 
-                ls.stderr.on('data', function(data) {
-                    console.log('stderr: ' + data.toString());
-                });
                 return new Promise((resolve) => {
+                    let workflowname = "software_deployment.yml"
+                    const ls = spawn('act', ['-W', process.env.WORKFLOWPATH + "/" + workflowname, 'workflow_dispatch',
+                        '--input', 'deploymentOwner=' + meta.extensions.kubernetes.clustername,
+                        '--input', 'sourceRepository=' + item.source,
+                        '--input', 'sourceBranch=' + item.branch,
+                        '--input', 'eksClusterName=' + meta.extensions.kubernetes.clustername,
+                        '--input', 'awsConnection=iam',
+                        '-s', 'EKSINSTANCEROLEARN', '-s', 'EKSSERVICEARN', '-s', 'AWS_REGION',
+                        '-s', 'GITHUB_TOKEN']);
+                    ls.stdout.on('data', function(data) {
+                        console.log('stdout: ' + data.toString());
+                    });
+
+                    ls.stderr.on('data', function(data) {
+                        console.log('stderr: ' + data.toString());
+                    });
                     ls.on('exit', function(code) {
                         console.log('child process exited with code ' + code!.toString());
                         return resolve("done")
@@ -152,7 +153,7 @@ async function run(): Promise<void> {
     } else {
         console.log(`Found meta ${meta}!`);
         const metaobj = JSON.parse(meta)
-        spinUpEKS(metaobj, token, awskey, awssecret, awstoken).then(r =>{
+        spinUpEKS(metaobj, token, awskey, awssecret, awstoken).then(r => {
             console.log("SPINNING UP PROJECTS")
             spinUpProjects(metaobj, token)
         })
