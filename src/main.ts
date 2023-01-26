@@ -89,17 +89,17 @@ async function spinUpProjects(meta: MetaObject, token: string) {
                     "sourceRepository": item.source,
                     "sourceBranch": item.branch
                 }
-                /*let id: number = await runWF("unity-sds",
+                let id: number = await runWF("unity-sds",
                     "refs/heads/main",
                     "unity-cs-infra",
                     token,
-                    "deployment_oidc.yml",
-                    1800,
+                    "software_deployment.yml",
+                    3600,
                     input
                 )
                 console.log("checking run")
                 await runWait("unity-sds", 60000, "unity-cs-infra", id, 3600, token)
-                console.log("wf id: " + id)*/
+                console.log("wf id: " + id)
                 console.log("launching service")
             } else {
                 console.log("launching act")

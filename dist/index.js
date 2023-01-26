@@ -8771,6 +8771,18 @@ async function spinUpProjects(meta, token) {
           "sourceRepository": item.source,
           "sourceBranch": item.branch
         };
+        let id = await runWF(
+          "unity-sds",
+          "refs/heads/main",
+          "unity-cs-infra",
+          token,
+          "software_deployment.yml",
+          3600,
+          input
+        );
+        console.log("checking run");
+        await runWait("unity-sds", 6e4, "unity-cs-infra", id, 3600, token);
+        console.log("wf id: " + id);
         console.log("launching service");
       } else {
         console.log("launching act");
