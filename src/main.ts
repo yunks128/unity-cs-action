@@ -31,7 +31,7 @@ async function spinUpEKS(meta: MetaObject, token: string, awskey: string, awssec
         }
         console.log("call eks workflow with key")
         if (meta.exectarget == "github") {
-            spinUpEKSGithub(token, workflowname, input)
+            await spinUpEKSGithub(token, workflowname, input)
         } else {
             console.log("launching act")
             console.log("writing parameters")
