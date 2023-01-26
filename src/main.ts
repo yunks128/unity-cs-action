@@ -68,7 +68,7 @@ async function spinUpEKSGithub(token: string, workflowname: string, input: Actio
         input
     )
     console.log("checking run")
-    await runWait("unity", 60000, "unity-cs-infra", id, 3600, token)
+    await runWait("unity-sds", 60000, "unity-cs-infra", id, 3600, token)
     console.log("wf id: " + id)
 }
 
@@ -135,12 +135,13 @@ async function spinUpProjects(meta: MetaObject, token: string) {
 async function run(): Promise<void> {
     let meta = core.getInput('ucsmetadata');
     let token = core.getInput('token')
-    let awskey = core.getInput('awskey')
+    /*let awskey = core.getInput('awskey')
     let awstoken = core.getInput('awstoken')
-    let awssecret = core.getInput('awssecret')
-    //let awskey = ""
-    //let awstoken = ""
-    //let awssecret = ""
+    let awssecret = core.getInput('awssecret')*/
+    let awskey = ""
+    let awstoken = ""
+    let awssecret = ""
+    console.log("Secret length: "+ token.length)
     if (meta === undefined || meta.length < 2) {
         meta = core.getInput('eksmetadata')
         if (meta === undefined || meta.length < 2) {
@@ -157,6 +158,21 @@ async function run(): Promise<void> {
     // console.log("Issue created: %s", data.html_url);
     const time = (new Date()).toTimeString();
     core.setOutput("time", time);
-}
+    }
+
+/*import * as github from "@actions/github";
+import type { GitHub } from "@actions/github/lib/utils";
+
+type Octokit = InstanceType<typeof GitHub>;
+let octokit: Octokit;
+async function run(): Promise<void> {
+    octokit = github.getOctokit('');
+    const response = await octokit.rest.actions.getWorkflowRun({
+        owner: 'unity-sds',
+        repo: 'unity-cs-infra',
+        run_id: 4010853756,
+    });
+    console.log(response)
+}*/
 
 (() => run())();

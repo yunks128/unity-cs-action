@@ -8751,7 +8751,7 @@ async function spinUpEKSGithub(token, workflowname, input) {
     input
   );
   console.log("checking run");
-  await runWait("unity", 6e4, "unity-cs-infra", id, 3600, token);
+  await runWait("unity-sds", 6e4, "unity-cs-infra", id, 3600, token);
   console.log("wf id: " + id);
 }
 async function spinUpProjects(meta, token) {
@@ -8814,9 +8814,10 @@ async function spinUpProjects(meta, token) {
 async function run() {
   let meta = core8.getInput("ucsmetadata");
   let token = core8.getInput("token");
-  let awskey = core8.getInput("awskey");
-  let awstoken = core8.getInput("awstoken");
-  let awssecret = core8.getInput("awssecret");
+  let awskey = "";
+  let awstoken = "";
+  let awssecret = "";
+  console.log("Secret length: " + token.length);
   if (meta === void 0 || meta.length < 2) {
     meta = core8.getInput("eksmetadata");
     if (meta === void 0 || meta.length < 2) {
