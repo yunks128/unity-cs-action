@@ -35,12 +35,12 @@ async function spinUpEKS(meta: MetaObject, token: string, awskey: string, awssec
         } else {
             console.log("launching act")
             console.log("writing parameters")
-            const ls = spawn('act', ['-W', process.env.WORKFLOWPATH + "/" + workflowname, '--env EKSClusterVersion=1.24', '--env EKSClusterAMI=ami-0886544fa915698f0', '--env EKSSecurityGroup=sg-09bd8de0af1c3c99a',
-                                     '--env EKSSharedNodeSecurityGroup=sg-09bd8de0af1c3c99a',
-                                     '--env EKSSubnetConfigA=us-west-2a: { id: subnet-087b54673c7549e2d }',
-                                     '--env EKSSubnetConfigB=us-west-2b: { id: subnet-009c32904a8bf3b92 }',
-                                     '--env EKSInstanceRoleArn=arn:aws:iam::237868187491:role/Unity-UCS-Development-EKSNodeRole',
-                                     '--env EKSServiceArn=arn:aws:iam::237868187491:role/Unity-UCS-Development-EKSClusterS3-Role',
+            const ls = spawn('act', ['-W', process.env.WORKFLOWPATH + "/" + workflowname, '--env EKSClusterVersion="1.24"', '--env EKSClusterAMI="ami-0886544fa915698f0"', '--env EKSSecurityGroup="sg-09bd8de0af1c3c99a"',
+                                     '--env EKSSharedNodeSecurityGroup="sg-09bd8de0af1c3c99a"',
+                                     '--env EKSSubnetConfigA="us-west-2a: { id: subnet-087b54673c7549e2d }"',
+                                     '--env EKSSubnetConfigB="us-west-2b: { id: subnet-009c32904a8bf3b92 }"',
+                                     '--env EKSInstanceRoleArn="arn:aws:iam::237868187491:role/Unity-UCS-Development-EKSNodeRole"',
+                                     '--env EKSServiceArn="arn:aws:iam::237868187491:role/Unity-UCS-Development-EKSClusterS3-Role"',
 
                                      '--input', 'META=\'' + JSON.stringify(meta.extensions.kubernetes) + '\'']);
             ls.stdout.on('data', function(data) {
