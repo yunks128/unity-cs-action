@@ -8738,6 +8738,8 @@ async function spinUpEKS(meta, token, awskey, awssecret, awstoken) {
         "--env",
         'EKSServiceArn="arn:aws:iam::237868187491:role/Unity-UCS-Development-EKSClusterS3-Role"',
         "--input",
+        "AWSCONNECTION=iam",
+        "--input",
         "META='" + JSON.stringify(meta.extensions.kubernetes) + "'"
       ]);
       ls.stdout.on("data", function(data) {
