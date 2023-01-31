@@ -8821,10 +8821,10 @@ async function spinUpProjects(meta, token) {
             "eksClusterName=" + meta.extensions.kubernetes.clustername,
             "--input",
             "awsConnection=iam",
+            "--input",
+            "deploymentSource=act",
             "-s",
-            "GITHUB_TOKEN",
-            "--env-file",
-            "/tmp/my.env"
+            "GITHUB_TOKEN=" + meta.ghtoken
           ]);
           ls.stdout.on("data", function(data) {
             console.log("stdout: " + data.toString());

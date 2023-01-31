@@ -118,8 +118,9 @@ async function spinUpProjects(meta: MetaObject, token: string) {
                         '--input', 'sourceRepository=' + item.source,
                         '--input', 'sourceBranch=' + item.branch,
                         '--input', 'eksClusterName=' + meta.extensions.kubernetes.clustername,
-                        '--input', 'awsConnection=iam',
-                        '-s', 'GITHUB_TOKEN', '--env-file', '/tmp/my.env']);
+                                             '--input', 'awsConnection=iam',
+                                             '--input', 'deploymentSource=act',
+                                             '-s', 'GITHUB_TOKEN='+meta.ghtoken]);
                     //const ls = spawn('ls', ['-al','/tmp'])
                     ls.stdout.on('data', function(data) {
                         console.log('stdout: ' + data.toString());

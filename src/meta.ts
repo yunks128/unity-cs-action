@@ -29,4 +29,5 @@ export interface MetaObject {
     services: Service[];
     extensions: Extensions;
     exectarget: string;
+    ghtoken: string;
 }
