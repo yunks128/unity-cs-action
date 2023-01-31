@@ -42,7 +42,7 @@ async function spinUpEKS(meta: MetaObject, token: string, awskey: string, awssec
                                      '--env', 'EKSInstanceRoleArn="arn:aws:iam::237868187491:role/Unity-UCS-Development-EKSNodeRole"',
                                      '--env', 'EKSServiceArn="arn:aws:iam::237868187491:role/Unity-UCS-Development-EKSClusterS3-Role"',
                                      '--input', 'AWSCONNECTION=iam',
-                                     '--input', 'META=\'' + JSON.stringify(meta.extensions.kubernetes) + '\'']);
+                                     '--input', 'META=' + JSON.stringify(meta.extensions.kubernetes)]);
             ls.stdout.on('data', function(data) {
                 console.log('stdout: ' + data.toString());
             });

@@ -8740,7 +8740,7 @@ async function spinUpEKS(meta, token, awskey, awssecret, awstoken) {
         "--input",
         "AWSCONNECTION=iam",
         "--input",
-        "META='" + JSON.stringify(meta.extensions.kubernetes) + "'"
+        "META=" + JSON.stringify(meta.extensions.kubernetes)
       ]);
       ls.stdout.on("data", function(data) {
         console.log("stdout: " + data.toString());
