@@ -7,15 +7,18 @@ import { exec } from "child_process";
 import { spawn } from "child_process";
 
 async function spinUpEKS(meta: MetaObject, token: string, awskey: string, awssecret: string, awstoken: string) {
+    // Check for extension block
     if (meta.hasOwnProperty("extensions")) {
-        console.log("AWS Key: " + awskey)
         var workflowname = "deploy_eks.yml"
         let input: ActionWorkflowInputs = <ActionWorkflowInputs>{};
+
+        // If we have a kubernetesd block but the exec target is not github
         if (meta["extensions"].hasOwnProperty("kubernetes") && meta.exectarget != "github") {
             input = {
                 "META": JSON.stringify(meta.extensions.kubernetes)
             }
         }
+        // If we have a kubernetes block and there are AWS keys set (we're assuming in a github action not act)
         else if (meta["extensions"].hasOwnProperty("kubernetes") && awskey != "") {
             input = {
                 "META": JSON.stringify(meta.extensions.kubernetes),
@@ -23,47 +26,57 @@ async function spinUpEKS(meta: MetaObject, token: string, awskey: string, awssec
                 "SECRET": awssecret,
                 "TOKEN": awstoken,
             }
-        } else if (meta["extensions"].hasOwnProperty("kubernetes")) {
+        }
+        // If there is a kubernetes block, to run in github and no AWS keys are set
+        else if (meta["extensions"].hasOwnProperty("kubernetes")) {
             input = {
                 "META": JSON.stringify(meta.extensions.kubernetes),
             }
 
         }
         console.log("call eks workflow with key")
-        if (meta.exectarget == "github") {
-            await spinUpEKSGithub(token, workflowname, input)
-        } else {
-            console.log("launching act")
-            console.log("writing parameters")
-            const ls = spawn('act', ['-W', process.env.WORKFLOWPATH + "/" + workflowname, '--env', 'EKSClusterVersion=1.24', '--env', 'EKSClusterAMI=ami-0886544fa915698f0', '--env', 'EKSSecurityGroup=sg-09bd8de0af1c3c99a',
-                                     '--env', 'EKSSharedNodeSecurityGroup=sg-09bd8de0af1c3c99a',
-                                     '--env', 'EKSSubnetConfigA=us-west-2a: { id: subnet-087b54673c7549e2d }',
-                                     '--env', 'EKSSubnetConfigB=us-west-2b: { id: subnet-009c32904a8bf3b92 }',
-                                     '--env', 'EKSInstanceRoleArn=arn:aws:iam::237868187491:role/Unity-UCS-Development-EKSNodeRole',
-                                     '--env', 'EKSServiceArn=arn:aws:iam::237868187491:role/Unity-UCS-Development-EKSClusterS3-Role',
-                                     '--input', 'AWSCONNECTION=iam',
-                                     '--input', 'META=' + JSON.stringify(meta.extensions.kubernetes)]);
-            ls.stdout.on('data', function(data) {
-                console.log('stdout: ' + data.toString());
-            });
+        // Check for nodegroup block, if not set, we assume we're reusing an existing EKS cluster
+        if (meta["extensions"].hasOwnProperty("kubernetes") && meta.extensions.kubernetes.hasOwnProperty("nodegroups")) {
+            // If the exec target is github we want to run using Github CI
+            if (meta.exectarget == "github") {
+                await spinUpEKSGithub(token, workflowname, input)
+            }
+            // If the exec target is not set we assume we want to run in a non github environment and run via act
+            else {
 
-            ls.stderr.on('data', function(data) {
-                console.log('stderr: ' + data.toString());
-            });
-            await new Promise((resolve) => {
-                ls.on('exit', function(code) {
-                    console.log('child process exited with code ' + code!.toString());
-                    return resolve("done")
+                console.log("launching act")
+                console.log("writing parameters")
+                const ls = spawn('act', ['-W', process.env.WORKFLOWPATH + "/" + workflowname, '--env', 'EKSClusterVersion=1.24', '--env', 'EKSClusterAMI=ami-0886544fa915698f0', '--env', 'EKSSecurityGroup=sg-09bd8de0af1c3c99a',
+                    '--env', 'EKSSharedNodeSecurityGroup=sg-09bd8de0af1c3c99a',
+                    '--env', 'EKSSubnetConfigA=us-west-2a: { id: subnet-087b54673c7549e2d }',
+                    '--env', 'EKSSubnetConfigB=us-west-2b: { id: subnet-009c32904a8bf3b92 }',
+                    '--env', 'EKSInstanceRoleArn=arn:aws:iam::237868187491:role/Unity-UCS-Development-EKSNodeRole',
+                    '--env', 'EKSServiceArn=arn:aws:iam::237868187491:role/Unity-UCS-Development-EKSClusterS3-Role',
+                    '--input', 'AWSCONNECTION=iam',
+                    '--input', 'META=' + JSON.stringify(meta.extensions.kubernetes)]);
+                ls.stdout.on('data', function(data) {
+                    console.log('stdout: ' + data.toString());
                 });
-            })
+
+                ls.stderr.on('data', function(data) {
+                    console.log('stderr: ' + data.toString());
+                });
+                await new Promise((resolve) => {
+                    ls.on('exit', function(code) {
+                        console.log('child process exited with code ' + code!.toString());
+                        return resolve("done")
+                    });
+                })
+            }
         }
 
     } else {
-
+        // No extension probably do nothing. 
 
     }
 }
 
+// Spin up EKS via github action. Using the run await code to check for EKS to finish before continuing.
 async function spinUpEKSGithub(token: string, workflowname: string, input: ActionWorkflowInputs) {
     let id: number = await runWF("unity-sds",
         "refs/heads/main",
@@ -78,9 +91,11 @@ async function spinUpEKSGithub(token: string, workflowname: string, input: Actio
     console.log("wf id: " + id)
 }
 
+// Spin up projects
 async function spinUpProjects(meta: MetaObject, token: string) {
     if (meta["services"]) {
         for (const item of meta["services"]) {
+            // Run via github action if github is the exectarget
             if (meta.exectarget == "github") {
                 const index = meta["services"].indexOf(item);
                 console.log("Service found")
@@ -107,7 +122,9 @@ async function spinUpProjects(meta: MetaObject, token: string) {
                 await runWait("unity-sds", 60000, "unity-cs-infra", id, 3600, token)
                 console.log("wf id: " + id)
                 console.log("launching service")
-            } else {
+            }
+            // Run via act if there is no exectarget set
+            else {
                 console.log("launching act")
                 console.log("writing parameters")
 
@@ -118,9 +135,9 @@ async function spinUpProjects(meta: MetaObject, token: string) {
                         '--input', 'sourceRepository=' + item.source,
                         '--input', 'sourceBranch=' + item.branch,
                         '--input', 'eksClusterName=' + meta.extensions.kubernetes.clustername,
-                                             '--input', 'awsConnection=iam',
-                                             '--input', 'deploymentSource=act',
-                                             '-s', 'GITHUB_TOKEN='+meta.ghtoken]);
+                        '--input', 'awsConnection=iam',
+                        '--input', 'deploymentSource=act',
+                        '-s', 'GITHUB_TOKEN=' + meta.ghtoken]);
                     //const ls = spawn('ls', ['-al','/tmp'])
                     ls.stdout.on('data', function(data) {
                         console.log('stdout: ' + data.toString());
@@ -148,7 +165,7 @@ async function run(): Promise<void> {
     let awskey = ""
     let awstoken = ""
     let awssecret = ""
-    console.log("Secret length: "+ token.length)
+    console.log("Secret length: " + token.length)
     if (meta === undefined || meta.length < 2) {
         meta = core.getInput('eksmetadata')
         if (meta === undefined || meta.length < 2) {
@@ -165,21 +182,7 @@ async function run(): Promise<void> {
     // console.log("Issue created: %s", data.html_url);
     const time = (new Date()).toTimeString();
     core.setOutput("time", time);
-    }
+}
 
-/*import * as github from "@actions/github";
-import type { GitHub } from "@actions/github/lib/utils";
-
-type Octokit = InstanceType<typeof GitHub>;
-let octokit: Octokit;
-async function run(): Promise<void> {
-    octokit = github.getOctokit('');
-    const response = await octokit.rest.actions.getWorkflowRun({
-        owner: 'unity-sds',
-        repo: 'unity-cs-infra',
-        run_id: 4010853756,
-    });
-    console.log(response)
-}*/
 
 (() => run())();

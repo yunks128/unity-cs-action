@@ -8693,7 +8693,6 @@ async function runWait(owner, pollInterval, repo, runId, timeout, token) {
 var import_child_process = require("child_process");
 async function spinUpEKS(meta, token, awskey, awssecret, awstoken) {
   if (meta.hasOwnProperty("extensions")) {
-    console.log("AWS Key: " + awskey);
     var workflowname = "deploy_eks.yml";
     let input = {};
     if (meta["extensions"].hasOwnProperty("kubernetes") && meta.exectarget != "github") {
@@ -8713,47 +8712,49 @@ async function spinUpEKS(meta, token, awskey, awssecret, awstoken) {
       };
     }
     console.log("call eks workflow with key");
-    if (meta.exectarget == "github") {
-      await spinUpEKSGithub(token, workflowname, input);
-    } else {
-      console.log("launching act");
-      console.log("writing parameters");
-      const ls = (0, import_child_process.spawn)("act", [
-        "-W",
-        process.env.WORKFLOWPATH + "/" + workflowname,
-        "--env",
-        "EKSClusterVersion=1.24",
-        "--env",
-        "EKSClusterAMI=ami-0886544fa915698f0",
-        "--env",
-        "EKSSecurityGroup=sg-09bd8de0af1c3c99a",
-        "--env",
-        "EKSSharedNodeSecurityGroup=sg-09bd8de0af1c3c99a",
-        "--env",
-        "EKSSubnetConfigA=us-west-2a: { id: subnet-087b54673c7549e2d }",
-        "--env",
-        "EKSSubnetConfigB=us-west-2b: { id: subnet-009c32904a8bf3b92 }",
-        "--env",
-        "EKSInstanceRoleArn=arn:aws:iam::237868187491:role/Unity-UCS-Development-EKSNodeRole",
-        "--env",
-        "EKSServiceArn=arn:aws:iam::237868187491:role/Unity-UCS-Development-EKSClusterS3-Role",
-        "--input",
-        "AWSCONNECTION=iam",
-        "--input",
-        "META=" + JSON.stringify(meta.extensions.kubernetes)
-      ]);
-      ls.stdout.on("data", function(data) {
-        console.log("stdout: " + data.toString());
-      });
-      ls.stderr.on("data", function(data) {
-        console.log("stderr: " + data.toString());
-      });
-      await new Promise((resolve) => {
-        ls.on("exit", function(code) {
-          console.log("child process exited with code " + code.toString());
-          return resolve("done");
+    if (meta["extensions"].hasOwnProperty("kubernetes") && meta.extensions.kubernetes.hasOwnProperty("nodegroups")) {
+      if (meta.exectarget == "github") {
+        await spinUpEKSGithub(token, workflowname, input);
+      } else {
+        console.log("launching act");
+        console.log("writing parameters");
+        const ls = (0, import_child_process.spawn)("act", [
+          "-W",
+          process.env.WORKFLOWPATH + "/" + workflowname,
+          "--env",
+          "EKSClusterVersion=1.24",
+          "--env",
+          "EKSClusterAMI=ami-0886544fa915698f0",
+          "--env",
+          "EKSSecurityGroup=sg-09bd8de0af1c3c99a",
+          "--env",
+          "EKSSharedNodeSecurityGroup=sg-09bd8de0af1c3c99a",
+          "--env",
+          "EKSSubnetConfigA=us-west-2a: { id: subnet-087b54673c7549e2d }",
+          "--env",
+          "EKSSubnetConfigB=us-west-2b: { id: subnet-009c32904a8bf3b92 }",
+          "--env",
+          "EKSInstanceRoleArn=arn:aws:iam::237868187491:role/Unity-UCS-Development-EKSNodeRole",
+          "--env",
+          "EKSServiceArn=arn:aws:iam::237868187491:role/Unity-UCS-Development-EKSClusterS3-Role",
+          "--input",
+          "AWSCONNECTION=iam",
+          "--input",
+          "META=" + JSON.stringify(meta.extensions.kubernetes)
+        ]);
+        ls.stdout.on("data", function(data) {
+          console.log("stdout: " + data.toString());
         });
-      });
+        ls.stderr.on("data", function(data) {
+          console.log("stderr: " + data.toString());
+        });
+        await new Promise((resolve) => {
+          ls.on("exit", function(code) {
+            console.log("child process exited with code " + code.toString());
+            return resolve("done");
+          });
+        });
+      }
     }
   } else {
   }
