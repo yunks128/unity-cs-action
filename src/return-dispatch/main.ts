@@ -1,6 +1,6 @@
 import * as core from "@actions/core";
 import {v4 as uuid} from "uuid";
-import {ActionConfig, ActionOutputs, ActionWorkflowInputs} from "./action";
+import {ActionConfig, ActionWorkflowInputs} from "./action";
 import * as api from "./api";
 
 const DISTINCT_ID = uuid();

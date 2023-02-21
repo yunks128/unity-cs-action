@@ -1,7 +1,6 @@
 import * as core from "@actions/core";
-import {ActionConfig, getConfig} from "./action";
+import {ActionConfig} from "./action";
 import {
-    getWorkflowRunActiveJobUrl,
     getWorkflowRunFailedJobs,
     getWorkflowRunState,
     init,

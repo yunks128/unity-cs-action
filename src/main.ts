@@ -3,23 +3,22 @@ import { MetaObject } from "./meta";
 import { runWF } from "./return-dispatch/main"
 import { runWait } from "./await-remote-run/main";
 import { ActionWorkflowInputs } from "./return-dispatch/action";
-import { exec } from "child_process";
 import { spawn } from "child_process";
 
 async function spinUpEKS(meta: MetaObject, token: string, awskey: string, awssecret: string, awstoken: string) {
     // Check for extension block
-    if (meta.hasOwnProperty("extensions")) {
-        var workflowname = "deploy_eks.yml"
+    if (Object.prototype.hasOwnProperty.call(meta, "extensions")) {
+        const workflowname = "deploy_eks.yml"
         let input: ActionWorkflowInputs = <ActionWorkflowInputs>{};
 
         // If we have a kubernetesd block but the exec target is not github
-        if (meta["extensions"].hasOwnProperty("kubernetes") && meta.exectarget != "github") {
+        if (Object.prototype.hasOwnProperty.call(meta["extensions"], "kubernetes") && meta.exectarget != "github") {
             input = {
                 "META": JSON.stringify(meta.extensions.kubernetes)
             }
         }
         // If we have a kubernetes block and there are AWS keys set (we're assuming in a github action not act)
-        else if (meta["extensions"].hasOwnProperty("kubernetes") && awskey != "") {
+        else if (Object.prototype.hasOwnProperty.call(meta["extensions"], "kubernetes") && awskey != "") {
             input = {
                 "META": JSON.stringify(meta.extensions.kubernetes),
                 "KEY": awskey,
@@ -28,7 +27,7 @@ async function spinUpEKS(meta: MetaObject, token: string, awskey: string, awssec
             }
         }
         // If there is a kubernetes block, to run in github and no AWS keys are set
-        else if (meta["extensions"].hasOwnProperty("kubernetes")) {
+        else if (Object.prototype.hasOwnProperty.call(meta["extensions"], "kubernetes")) {
             input = {
                 "META": JSON.stringify(meta.extensions.kubernetes),
             }
@@ -36,7 +35,7 @@ async function spinUpEKS(meta: MetaObject, token: string, awskey: string, awssec
         }
         console.log("call eks workflow with key")
         // Check for nodegroup block, if not set, we assume we're reusing an existing EKS cluster
-        if (meta["extensions"].hasOwnProperty("kubernetes") && meta.extensions.kubernetes.hasOwnProperty("nodegroups")) {
+        if (Object.prototype.hasOwnProperty.call(meta["extensions"], "kubernetes") && Object.prototype.hasOwnProperty.call(meta.extensions.kubernetes, "nodegroups")) {
             // If the exec target is github we want to run using Github CI
             if (meta.exectarget == "github") {
                 await spinUpEKSGithub(token, workflowname, input)
@@ -63,7 +62,7 @@ async function spinUpEKS(meta: MetaObject, token: string, awskey: string, awssec
                 });
                 await new Promise((resolve) => {
                     ls.on('exit', function(code) {
-                        console.log('child process exited with code ' + code!.toString());
+                        console.log('child process exited with code ' + code?.toString());
                         return resolve("done")
                     });
                 })
@@ -78,7 +77,7 @@ async function spinUpEKS(meta: MetaObject, token: string, awskey: string, awssec
 
 // Spin up EKS via github action. Using the run await code to check for EKS to finish before continuing.
 async function spinUpEKSGithub(token: string, workflowname: string, input: ActionWorkflowInputs) {
-    let id: number = await runWF("unity-sds",
+    const id: number = await runWF("unity-sds",
         "refs/heads/main",
         "unity-cs-infra",
         token,
@@ -110,7 +109,7 @@ async function spinUpProjects(meta: MetaObject, token: string) {
                     "sourceRepository": item.source,
                     "sourceBranch": item.branch
                 }
-                let id: number = await runWF("unity-sds",
+                const id: number = await runWF("unity-sds",
                     "refs/heads/main",
                     "unity-cs-infra",
                     token,
@@ -129,7 +128,7 @@ async function spinUpProjects(meta: MetaObject, token: string) {
                 console.log("writing parameters")
 
                 return new Promise((resolve) => {
-                    let workflowname = "software_deployment.yml"
+                    const workflowname = "software_deployment.yml"
                     const ls = spawn('act', ['-W', process.env.WORKFLOWPATH + "/" + workflowname, 'workflow_dispatch',
                         '--input', 'deploymentOwner=' + meta.extensions.kubernetes.clustername,
                         '--input', 'sourceRepository=' + item.source,
@@ -147,7 +146,7 @@ async function spinUpProjects(meta: MetaObject, token: string) {
                         console.log('stderr: ' + data.toString());
                     });
                     ls.on('exit', function(code) {
-                        console.log('child process exited with code ' + code!.toString());
+                        console.log('child process exited with code ' + code?.toString());
                         return resolve("done")
                     });
                 })
@@ -158,13 +157,13 @@ async function spinUpProjects(meta: MetaObject, token: string) {
 
 async function run(): Promise<void> {
     let meta = core.getInput('ucsmetadata');
-    let token = core.getInput('token')
+    const token = core.getInput('token')
     /*let awskey = core.getInput('awskey')
     let awstoken = core.getInput('awstoken')
     let awssecret = core.getInput('awssecret')*/
-    let awskey = ""
-    let awstoken = ""
-    let awssecret = ""
+    const awskey = ""
+    const awstoken = ""
+    const awssecret = ""
     console.log("Secret length: " + token.length)
     if (meta === undefined || meta.length < 2) {
         meta = core.getInput('eksmetadata')
