@@ -243,6 +243,7 @@ async function spinUpProjects(meta: MetaObject, token: string) {
 
 async function run(): Promise<void> {
     let meta = core.getInput('ucsmetadata');
+    const metaobj = JSON.parse(meta)
     const token = core.getInput('token')
     /*let awskey = core.getInput('awskey')
     let awstoken = core.getInput('awstoken')
@@ -252,6 +253,7 @@ async function run(): Promise<void> {
     const awssecret = ""
     console.log("Secret length: " + token.length)
     console.log(meta);
+    console.log("The deployment type is " + meta.deploymentType);
     if (meta === undefined || meta.length < 2) {
         meta = core.getInput('eksmetadata')
         if (meta === undefined || meta.length < 2) {
@@ -261,7 +263,6 @@ async function run(): Promise<void> {
         console.log(`Running teardown of EKS Cluster`);
     } else {
         console.log(`Found meta ${meta}!`);
-        const metaobj = JSON.parse(meta)
         spinUpEKS(metaobj, token, awskey, awssecret, awstoken).then(() => {
             console.log("SPINNING UP PROJECTS")
             spinUpProjects(metaobj, token)
