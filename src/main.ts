@@ -251,6 +251,7 @@ async function run(): Promise<void> {
     const awstoken = ""
     const awssecret = ""
     console.log("Secret length: " + token.length)
+    console.log(meta);
     if (meta === undefined || meta.length < 2) {
         meta = core.getInput('eksmetadata')
         if (meta === undefined || meta.length < 2) {
