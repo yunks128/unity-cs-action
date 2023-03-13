@@ -256,7 +256,7 @@ async function run(): Promise<void> {
         if (meta === undefined || meta.length < 2) {
             core.setFailed('No metadata found')
         }
-    } else if (meta.deploymentType == "Teardown") {
+    } else if (meta.deploymentType == "teardown") {
         console.log(`Running teardown of EKS Cluster`);
     } else {
         console.log(`Found meta ${meta}!`);
