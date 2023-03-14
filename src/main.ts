@@ -253,13 +253,13 @@ async function run(): Promise<void> {
     const awssecret = ""
     console.log("Secret length: " + token.length)
     console.log(meta)
-    console.log("The deployment type is " + meta.deploymentType)
+    console.log("The deployment type is " + metaobj.deploymentType)
     if (meta === undefined || meta.length < 2) {
         meta = core.getInput('eksmetadata')
         if (meta === undefined || meta.length < 2) {
             core.setFailed('No metadata found')
         }
-    } else if (meta.deploymentType == "teardown") {
+    } else if (metaobj.deploymentType == "teardown") {
         console.log(`Running teardown of EKS Cluster`);
     } else {
         console.log(`Found meta ${meta}!`);

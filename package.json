@@ -27,12 +27,13 @@
   "dependencies": {
     "@actions/core": "^1.10.0",
     "@actions/github": "^5.1.1",
+    "actions": "^1.3.0",
     "return-dispatch": "github:Codex-/return-dispatch",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@types/jest": "^29.0.3",
-    "@types/node": "^18.7.18",
+    "@types/node": "^18.15.3",
     "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^5.53.0",
     "@typescript-eslint/parser": "^5.53.0",
