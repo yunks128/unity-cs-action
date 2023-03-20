@@ -30,4 +30,5 @@ export interface MetaObject {
     extensions: Extensions;
     exectarget: string;
     ghtoken: string;
+    deploymentType: string;
 }
