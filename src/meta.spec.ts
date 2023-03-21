@@ -5,5 +5,5 @@ describe("utils", () => {
     it("should return the branch name for a valid branch ref", () => {
       expect("").toStrictEqual("");
     });
-   });
+  });
 });
