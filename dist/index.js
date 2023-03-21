@@ -8692,27 +8692,27 @@ async function runWait(owner, pollInterval, repo, runId, timeout, token) {
 // src/main.ts
 var import_child_process = require("child_process");
 async function spinUpEKS(meta, token, awskey, awssecret, awstoken) {
-  if (meta.hasOwnProperty("extensions")) {
-    var workflowname = "deploy_eks.yml";
+  if (Object.prototype.hasOwnProperty.call(meta, "extensions")) {
+    const workflowname = "deploy_eks.yml";
     let input = {};
-    if (meta["extensions"].hasOwnProperty("kubernetes") && meta.exectarget != "github") {
+    if (Object.prototype.hasOwnProperty.call(meta["extensions"], "kubernetes") && meta.exectarget != "github") {
       input = {
         "META": JSON.stringify(meta.extensions.kubernetes)
       };
-    } else if (meta["extensions"].hasOwnProperty("kubernetes") && awskey != "") {
+    } else if (Object.prototype.hasOwnProperty.call(meta["extensions"], "kubernetes") && awskey != "") {
       input = {
         "META": JSON.stringify(meta.extensions.kubernetes),
         "KEY": awskey,
         "SECRET": awssecret,
         "TOKEN": awstoken
       };
-    } else if (meta["extensions"].hasOwnProperty("kubernetes")) {
+    } else if (Object.prototype.hasOwnProperty.call(meta["extensions"], "kubernetes")) {
       input = {
         "META": JSON.stringify(meta.extensions.kubernetes)
       };
     }
     console.log("call eks workflow with key");
-    if (meta["extensions"].hasOwnProperty("kubernetes") && meta.extensions.kubernetes.hasOwnProperty("nodegroups")) {
+    if (Object.prototype.hasOwnProperty.call(meta["extensions"], "kubernetes") && Object.prototype.hasOwnProperty.call(meta.extensions.kubernetes, "nodegroups")) {
       if (meta.exectarget == "github") {
         await spinUpEKSGithub(token, workflowname, input);
       } else {
@@ -8750,7 +8750,7 @@ async function spinUpEKS(meta, token, awskey, awssecret, awstoken) {
         });
         await new Promise((resolve) => {
           ls.on("exit", function(code) {
-            console.log("child process exited with code " + code.toString());
+            console.log("child process exited with code " + (code == null ? void 0 : code.toString()));
             return resolve("done");
           });
         });
@@ -8760,7 +8760,7 @@ async function spinUpEKS(meta, token, awskey, awssecret, awstoken) {
   }
 }
 async function spinUpEKSGithub(token, workflowname, input) {
-  let id = await runWF(
+  const id = await runWF(
     "unity-sds",
     "refs/heads/main",
     "unity-cs-infra",
@@ -8790,7 +8790,7 @@ async function spinUpProjects(meta, token) {
           "sourceRepository": item.source,
           "sourceBranch": item.branch
         };
-        let id = await runWF(
+        const id = await runWF(
           "unity-sds",
           "refs/heads/main",
           "unity-cs-infra",
@@ -8807,7 +8807,7 @@ async function spinUpProjects(meta, token) {
         console.log("launching act");
         console.log("writing parameters");
         return new Promise((resolve) => {
-          let workflowname = "software_deployment.yml";
+          const workflowname = "software_deployment.yml";
           const ls = (0, import_child_process.spawn)("act", [
             "-W",
             process.env.WORKFLOWPATH + "/" + workflowname,
@@ -8834,7 +8834,7 @@ async function spinUpProjects(meta, token) {
             console.log("stderr: " + data.toString());
           });
           ls.on("exit", function(code) {
-            console.log("child process exited with code " + code.toString());
+            console.log("child process exited with code " + (code == null ? void 0 : code.toString()));
             return resolve("done");
           });
         });
@@ -8844,19 +8844,23 @@ async function spinUpProjects(meta, token) {
 }
 async function run() {
   let meta = core8.getInput("ucsmetadata");
-  let token = core8.getInput("token");
-  let awskey = "";
-  let awstoken = "";
-  let awssecret = "";
+  const metaobj = JSON.parse(meta);
+  const token = core8.getInput("token");
+  const awskey = "";
+  const awstoken = "";
+  const awssecret = "";
   console.log("Secret length: " + token.length);
+  console.log(meta);
+  console.log("The deployment type is " + metaobj.deploymentType);
   if (meta === void 0 || meta.length < 2) {
     meta = core8.getInput("eksmetadata");
     if (meta === void 0 || meta.length < 2) {
       core8.setFailed("No metadata found");
     }
+  } else if (metaobj.deploymentType == "teardown") {
+    console.log(`Running teardown of EKS Cluster`);
   } else {
     console.log(`Found meta ${meta}!`);
-    const metaobj = JSON.parse(meta);
     spinUpEKS(metaobj, token, awskey, awssecret, awstoken).then(() => {
       console.log("SPINNING UP PROJECTS");
       spinUpProjects(metaobj, token);
