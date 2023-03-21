@@ -20,7 +20,7 @@ async function spinUpEKS(
     // If we have a kubernetesd block but the exec target is not github
     if (
       Object.prototype.hasOwnProperty.call(meta["extensions"], "kubernetes") &&
-      meta.exectarget != "github"
+      meta.exectarget !== "github"
     ) {
       input = {
         META: JSON.stringify(meta.extensions.kubernetes),
@@ -29,7 +29,7 @@ async function spinUpEKS(
     // If we have a kubernetes block and there are AWS keys set (we're assuming in a github action not act)
     else if (
       Object.prototype.hasOwnProperty.call(meta["extensions"], "kubernetes") &&
-      awskey != ""
+      awskey !== ""
     ) {
       input = {
         META: JSON.stringify(meta.extensions.kubernetes),
@@ -56,7 +56,7 @@ async function spinUpEKS(
       )
     ) {
       // If the exec target is github we want to run using Github CI
-      if (meta.exectarget == "github") {
+      if (meta.exectarget === "github") {
         await spinUpEKSGithub(token, workflowname, input);
       }
       // If the exec target is not set we assume we want to run in a non github environment and run via act
@@ -122,7 +122,7 @@ async function tearDownEKS(
     // If we have a kubernetesd block but the exec target is not github
     if (
       Object.prototype.hasOwnProperty.call(meta["extensions"], "kubernetes") &&
-      meta.exectarget != "github"
+      meta.exectarget !== "github"
     ) {
       input = {
         META: JSON.stringify(meta.extensions.kubernetes),
@@ -131,7 +131,7 @@ async function tearDownEKS(
     // If we have a kubernetes block and there are AWS keys set (we're assuming in a github action not act)
     else if (
       Object.prototype.hasOwnProperty.call(meta["extensions"], "kubernetes") &&
-      awskey != ""
+      awskey !== ""
     ) {
       input = {
         META: JSON.stringify(meta.extensions.kubernetes),
@@ -254,7 +254,7 @@ async function spinUpProjects(meta: MetaObject, token: string) {
   if (meta["services"]) {
     for (const item of meta["services"]) {
       // Run via github action if github is the exectarget
-      if (meta.exectarget == "github") {
+      if (meta.exectarget === "github") {
         const index = meta["services"].indexOf(item);
         console.log("Service found");
         console.log(item, index);
@@ -344,11 +344,12 @@ async function run(): Promise<void> {
     if (meta === undefined || meta.length < 2) {
       core.setFailed("No metadata found");
     }
-  } else if (metaobj.deploymentType == "teardown") {
+  } else if (metaobj.deploymentType === "teardown") {
     console.log(`Running teardown of EKS Cluster`);
   } else {
-    console.log(`Found meta ${meta}!`);
-    spinUpEKS(metaobj, token, awskey, awssecret, awstoken).then(() => {
+      console.log(`Found meta ${meta}!`);
+      // eslint-disable-next-line github/no-then
+      spinUpEKS(metaobj, token, awskey, awssecret, awstoken).then(() => {
       console.log("SPINNING UP PROJECTS");
       spinUpProjects(metaobj, token);
     });
