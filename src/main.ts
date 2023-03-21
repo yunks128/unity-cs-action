@@ -158,7 +158,7 @@ async function tearDownEKS(
       )
     ) {
       // If the exec target is github we want to run using Github CI
-      if (meta.exectarget == "github") {
+      if (meta.exectarget === "github") {
         await tearDownEKSGithub(token, workflowname, input);
       }
       // If the exec target is not set we assume we want to run in a non github environment and run via act
@@ -347,9 +347,9 @@ async function run(): Promise<void> {
   } else if (metaobj.deploymentType === "teardown") {
     console.log(`Running teardown of EKS Cluster`);
   } else {
-      console.log(`Found meta ${meta}!`);
-      // eslint-disable-next-line github/no-then
-      spinUpEKS(metaobj, token, awskey, awssecret, awstoken).then(() => {
+    console.log(`Found meta ${meta}!`);
+    // eslint-disable-next-line github/no-then
+    spinUpEKS(metaobj, token, awskey, awssecret, awstoken).then(() => {
       console.log("SPINNING UP PROJECTS");
       spinUpProjects(metaobj, token);
     });
