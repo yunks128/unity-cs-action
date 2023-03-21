@@ -8063,6 +8063,7 @@ var require_github = __commonJS({
 });
 
 // src/main.ts
+var import_child_process = require("child_process");
 var core8 = __toESM(require_core());
 
 // src/return-dispatch/main.ts
@@ -8690,30 +8691,32 @@ async function runWait(owner, pollInterval, repo, runId, timeout, token) {
 }
 
 // src/main.ts
-var import_child_process = require("child_process");
 async function spinUpEKS(meta, token, awskey, awssecret, awstoken) {
   if (Object.prototype.hasOwnProperty.call(meta, "extensions")) {
     const workflowname = "deploy_eks.yml";
     let input = {};
-    if (Object.prototype.hasOwnProperty.call(meta["extensions"], "kubernetes") && meta.exectarget != "github") {
+    if (Object.prototype.hasOwnProperty.call(meta["extensions"], "kubernetes") && meta.exectarget !== "github") {
       input = {
-        "META": JSON.stringify(meta.extensions.kubernetes)
+        META: JSON.stringify(meta.extensions.kubernetes)
       };
-    } else if (Object.prototype.hasOwnProperty.call(meta["extensions"], "kubernetes") && awskey != "") {
+    } else if (Object.prototype.hasOwnProperty.call(meta["extensions"], "kubernetes") && awskey !== "") {
       input = {
-        "META": JSON.stringify(meta.extensions.kubernetes),
-        "KEY": awskey,
-        "SECRET": awssecret,
-        "TOKEN": awstoken
+        META: JSON.stringify(meta.extensions.kubernetes),
+        KEY: awskey,
+        SECRET: awssecret,
+        TOKEN: awstoken
       };
     } else if (Object.prototype.hasOwnProperty.call(meta["extensions"], "kubernetes")) {
       input = {
-        "META": JSON.stringify(meta.extensions.kubernetes)
+        META: JSON.stringify(meta.extensions.kubernetes)
       };
     }
     console.log("call eks workflow with key");
-    if (Object.prototype.hasOwnProperty.call(meta["extensions"], "kubernetes") && Object.prototype.hasOwnProperty.call(meta.extensions.kubernetes, "nodegroups")) {
-      if (meta.exectarget == "github") {
+    if (Object.prototype.hasOwnProperty.call(meta["extensions"], "kubernetes") && Object.prototype.hasOwnProperty.call(
+      meta.extensions.kubernetes,
+      "nodegroups"
+    )) {
+      if (meta.exectarget === "github") {
         await spinUpEKSGithub(token, workflowname, input);
       } else {
         console.log("launching act");
@@ -8776,19 +8779,19 @@ async function spinUpEKSGithub(token, workflowname, input) {
 async function spinUpProjects(meta, token) {
   if (meta["services"]) {
     for (const item of meta["services"]) {
-      if (meta.exectarget == "github") {
+      if (meta.exectarget === "github") {
         const index = meta["services"].indexOf(item);
         console.log("Service found");
         console.log(item, index);
         console.log("call service workflow");
         const input = {
-          "deploymentProject": "UNITY",
-          "deploymentStage": "DEV",
-          "deploymentOwner": "tom",
-          "eksClusterName": meta.extensions.kubernetes.clustername,
-          "deploymentTarget": "mcp",
-          "sourceRepository": item.source,
-          "sourceBranch": item.branch
+          deploymentProject: "UNITY",
+          deploymentStage: "DEV",
+          deploymentOwner: "tom",
+          eksClusterName: meta.extensions.kubernetes.clustername,
+          deploymentTarget: "mcp",
+          sourceRepository: item.source,
+          sourceBranch: item.branch
         };
         const id = await runWF(
           "unity-sds",
@@ -8857,7 +8860,7 @@ async function run() {
     if (meta === void 0 || meta.length < 2) {
       core8.setFailed("No metadata found");
     }
-  } else if (metaobj.deploymentType == "teardown") {
+  } else if (metaobj.deploymentType === "teardown") {
     console.log(`Running teardown of EKS Cluster`);
   } else {
     console.log(`Found meta ${meta}!`);
