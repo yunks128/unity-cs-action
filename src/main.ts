@@ -125,7 +125,8 @@ async function tearDownEKS(
       meta.exectarget !== "github"
     ) {
       input = {
-        META: JSON.stringify(meta.extensions.kubernetes),
+          META: JSON.stringify(meta.extensions.kubernetes),
+          TEARDOWN: "true"
       };
     }
     // If we have a kubernetes block and there are AWS keys set (we're assuming in a github action not act)
@@ -134,10 +135,11 @@ async function tearDownEKS(
       awskey !== ""
     ) {
       input = {
-        META: JSON.stringify(meta.extensions.kubernetes),
-        KEY: awskey,
-        SECRET: awssecret,
-        TOKEN: awstoken,
+          META: JSON.stringify(meta.extensions.kubernetes),
+          KEY: awskey,
+          SECRET: awssecret,
+          TOKEN: awstoken,
+          TEARDOWN: "true"
       };
     }
     // If there is a kubernetes block, to run in github and no AWS keys are set
@@ -145,7 +147,8 @@ async function tearDownEKS(
       Object.prototype.hasOwnProperty.call(meta["extensions"], "kubernetes")
     ) {
       input = {
-        META: JSON.stringify(meta.extensions.kubernetes),
+          META: JSON.stringify(meta.extensions.kubernetes),
+          TEARDOWN: "true"
       };
     }
     console.log("call eks workflow with key");

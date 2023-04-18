@@ -8768,18 +8768,21 @@ async function tearDownEKS(meta, token, awskey, awssecret, awstoken) {
     let input = {};
     if (Object.prototype.hasOwnProperty.call(meta["extensions"], "kubernetes") && meta.exectarget !== "github") {
       input = {
-        META: JSON.stringify(meta.extensions.kubernetes)
+        META: JSON.stringify(meta.extensions.kubernetes),
+        TEARDOWN: "true"
       };
     } else if (Object.prototype.hasOwnProperty.call(meta["extensions"], "kubernetes") && awskey !== "") {
       input = {
         META: JSON.stringify(meta.extensions.kubernetes),
         KEY: awskey,
         SECRET: awssecret,
-        TOKEN: awstoken
+        TOKEN: awstoken,
+        TEARDOWN: "true"
       };
     } else if (Object.prototype.hasOwnProperty.call(meta["extensions"], "kubernetes")) {
       input = {
-        META: JSON.stringify(meta.extensions.kubernetes)
+        META: JSON.stringify(meta.extensions.kubernetes),
+        TEARDOWN: "true"
       };
     }
     console.log("call eks workflow with key");
