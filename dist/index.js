@@ -8762,6 +8762,77 @@ async function spinUpEKS(meta, token, awskey, awssecret, awstoken) {
   } else {
   }
 }
+async function tearDownEKS(meta, token, awskey, awssecret, awstoken) {
+  if (Object.prototype.hasOwnProperty.call(meta, "extensions")) {
+    const workflowname = "deploy_eks.yml";
+    let input = {};
+    if (Object.prototype.hasOwnProperty.call(meta["extensions"], "kubernetes") && meta.exectarget !== "github") {
+      input = {
+        META: JSON.stringify(meta.extensions.kubernetes)
+      };
+    } else if (Object.prototype.hasOwnProperty.call(meta["extensions"], "kubernetes") && awskey !== "") {
+      input = {
+        META: JSON.stringify(meta.extensions.kubernetes),
+        KEY: awskey,
+        SECRET: awssecret,
+        TOKEN: awstoken
+      };
+    } else if (Object.prototype.hasOwnProperty.call(meta["extensions"], "kubernetes")) {
+      input = {
+        META: JSON.stringify(meta.extensions.kubernetes)
+      };
+    }
+    console.log("call eks workflow with key");
+    if (Object.prototype.hasOwnProperty.call(meta["extensions"], "kubernetes") && Object.prototype.hasOwnProperty.call(
+      meta.extensions.kubernetes,
+      "nodegroups"
+    )) {
+      if (meta.exectarget === "github") {
+        await tearDownEKSGithub(token, workflowname, input);
+      } else {
+        console.log("launching act");
+        console.log("writing parameters");
+        const ls = (0, import_child_process.spawn)("act", [
+          "-W",
+          process.env.WORKFLOWPATH + "/" + workflowname,
+          "--env",
+          "EKSClusterVersion=1.24",
+          "--env",
+          "EKSClusterAMI=ami-0886544fa915698f0",
+          "--env",
+          "EKSSecurityGroup=sg-09bd8de0af1c3c99a",
+          "--env",
+          "EKSSharedNodeSecurityGroup=sg-09bd8de0af1c3c99a",
+          "--env",
+          "EKSSubnetConfigA=us-west-2a: { id: subnet-087b54673c7549e2d }",
+          "--env",
+          "EKSSubnetConfigB=us-west-2b: { id: subnet-009c32904a8bf3b92 }",
+          "--env",
+          "EKSInstanceRoleArn=arn:aws:iam::237868187491:role/Unity-UCS-Development-EKSNodeRole",
+          "--env",
+          "EKSServiceArn=arn:aws:iam::237868187491:role/Unity-UCS-Development-EKSClusterS3-Role",
+          "--input",
+          "AWSCONNECTION=iam",
+          "--input",
+          "META=" + JSON.stringify(meta.extensions.kubernetes)
+        ]);
+        ls.stdout.on("data", function(data) {
+          console.log("stdout: " + data.toString());
+        });
+        ls.stderr.on("data", function(data) {
+          console.log("stderr: " + data.toString());
+        });
+        await new Promise((resolve) => {
+          ls.on("exit", function(code) {
+            console.log("child process exited with code " + (code == null ? void 0 : code.toString()));
+            return resolve("done");
+          });
+        });
+      }
+    }
+  } else {
+  }
+}
 async function spinUpEKSGithub(token, workflowname, input) {
   const id = await runWF(
     "unity-sds",
@@ -8776,19 +8847,33 @@ async function spinUpEKSGithub(token, workflowname, input) {
   await runWait("unity-sds", 6e4, "unity-cs-infra", id, 3600, token);
   console.log("wf id: " + id);
 }
+async function tearDownEKSGithub(token, workflowname, input) {
+  const id = await runWF(
+    "unity-sds",
+    "refs/heads/main",
+    "unity-cs-infra",
+    token,
+    workflowname,
+    1800,
+    input
+  );
+  console.log("checking run");
+  await runWait("unity-sds", 6e4, "unity-cs-infra", id, 3600, token);
+  console.log("wf id: " + id);
+}
 async function spinUpProjects(meta, token) {
-  if (meta["services"]) {
-    for (const item of meta["services"]) {
+  const eksClusterName = meta.extensions.kubernetes.clustername;
+  if (meta.services) {
+    for (const [index, item] of meta.services.entries()) {
       if (meta.exectarget === "github") {
-        const index = meta["services"].indexOf(item);
         console.log("Service found");
         console.log(item, index);
-        console.log("call service workflow");
+        console.log("Calling service workflow");
         const input = {
           deploymentProject: "UNITY",
           deploymentStage: "DEV",
           deploymentOwner: "tom",
-          eksClusterName: meta.extensions.kubernetes.clustername,
+          eksClusterName,
           deploymentTarget: "mcp",
           sourceRepository: item.source,
           sourceBranch: item.branch
@@ -8802,42 +8887,42 @@ async function spinUpProjects(meta, token) {
           3600,
           input
         );
-        console.log("checking run");
+        console.log("Checking run");
         await runWait("unity-sds", 6e4, "unity-cs-infra", id, 3600, token);
-        console.log("wf id: " + id);
-        console.log("launching service");
+        console.log(`Workflow ID: ${id}`);
+        console.log("Launching service");
       } else {
-        console.log("launching act");
-        console.log("writing parameters");
+        console.log("Launching act");
+        console.log("Writing parameters");
         return new Promise((resolve) => {
-          const workflowname = "software_deployment.yml";
+          const workflowName = "software_deployment.yml";
           const ls = (0, import_child_process.spawn)("act", [
             "-W",
-            process.env.WORKFLOWPATH + "/" + workflowname,
+            `${process.env.WORKFLOWPATH}/${workflowName}`,
             "workflow_dispatch",
             "--input",
-            "deploymentOwner=" + meta.extensions.kubernetes.clustername,
+            `deploymentOwner=${eksClusterName}`,
             "--input",
-            "sourceRepository=" + item.source,
+            `sourceRepository=${item.source}`,
             "--input",
-            "sourceBranch=" + item.branch,
+            `sourceBranch=${item.branch}`,
             "--input",
-            "eksClusterName=" + meta.extensions.kubernetes.clustername,
+            `eksClusterName=${eksClusterName}`,
             "--input",
             "awsConnection=iam",
             "--input",
             "deploymentSource=act",
             "-s",
-            "GITHUB_TOKEN=" + meta.ghtoken
+            `GITHUB_TOKEN=${meta.ghtoken}`
           ]);
           ls.stdout.on("data", function(data) {
-            console.log("stdout: " + data.toString());
+            console.log(`stdout: ${data.toString()}`);
           });
           ls.stderr.on("data", function(data) {
-            console.log("stderr: " + data.toString());
+            console.log(`stderr: ${data.toString()}`);
           });
           ls.on("exit", function(code) {
-            console.log("child process exited with code " + (code == null ? void 0 : code.toString()));
+            console.log(`Child process exited with code ${code == null ? void 0 : code.toString()}`);
             return resolve("done");
           });
         });
@@ -8846,22 +8931,29 @@ async function spinUpProjects(meta, token) {
   }
 }
 async function run() {
-  let meta = core8.getInput("ucsmetadata");
+  const meta = core8.getInput("ucsmetadata");
   const metaobj = JSON.parse(meta);
   const token = core8.getInput("token");
   const awskey = "";
   const awstoken = "";
   const awssecret = "";
-  console.log("Secret length: " + token.length);
+  console.log(`Secret length: ${token.length}`);
   console.log(meta);
-  console.log("The deployment type is " + metaobj.deploymentType);
-  if (meta === void 0 || meta.length < 2) {
-    meta = core8.getInput("eksmetadata");
-    if (meta === void 0 || meta.length < 2) {
+  console.log(`The deployment type is ${metaobj.deploymentType}`);
+  if (!meta || meta.length < 2) {
+    const eksMeta = core8.getInput("eksmetadata");
+    if (!eksMeta || eksMeta.length < 2) {
       core8.setFailed("No metadata found");
+      return;
     }
+    console.log(`Found meta ${eksMeta}!`);
+    spinUpEKS(JSON.parse(eksMeta), token, awskey, awssecret, awstoken).then(() => {
+      console.log("SPINNING UP PROJECTS");
+      spinUpProjects(metaobj, token);
+    });
   } else if (metaobj.deploymentType === "teardown") {
-    console.log(`Running teardown of EKS Cluster`);
+    console.log("Running teardown of EKS Cluster");
+    tearDownEKS(metaobj, token, awskey, awssecret, awstoken);
   } else {
     console.log(`Found meta ${meta}!`);
     spinUpEKS(metaobj, token, awskey, awssecret, awstoken).then(() => {
