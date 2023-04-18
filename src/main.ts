@@ -251,24 +251,27 @@ async function tearDownEKSGithub(
 
 // Spin up projects
 async function spinUpProjects(meta: MetaObject, token: string) {
-  if (meta["services"]) {
-    for (const item of meta["services"]) {
-      // Run via github action if github is the exectarget
+  const eksClusterName = meta.extensions.kubernetes.clustername;
+
+  if (meta.services) {
+    for (const [index, item] of meta.services.entries()) {
+      // Run via GitHub Actions if exectarget is set to github
       if (meta.exectarget === "github") {
-        const index = meta["services"].indexOf(item);
         console.log("Service found");
         console.log(item, index);
-        console.log("call service workflow");
+        console.log("Calling service workflow");
+
         const input: ActionWorkflowInputs = {
           deploymentProject: "UNITY",
           deploymentStage: "DEV",
           deploymentOwner: "tom",
-          eksClusterName: meta.extensions.kubernetes.clustername,
+          eksClusterName,
           deploymentTarget: "mcp",
           sourceRepository: item.source,
           sourceBranch: item.branch,
         };
-        const id: number = await runWF(
+
+        const id = await runWF(
           "unity-sds",
           "refs/heads/main",
           "unity-cs-infra",
@@ -277,47 +280,49 @@ async function spinUpProjects(meta: MetaObject, token: string) {
           3600,
           input
         );
-        console.log("checking run");
+
+        console.log("Checking run");
         await runWait("unity-sds", 60000, "unity-cs-infra", id, 3600, token);
-        console.log("wf id: " + id);
-        console.log("launching service");
+        console.log(`Workflow ID: ${id}`);
+        console.log("Launching service");
       }
       // Run via act if there is no exectarget set
       else {
-        console.log("launching act");
-        console.log("writing parameters");
+        console.log("Launching act");
+        console.log("Writing parameters");
 
         return new Promise((resolve) => {
-          const workflowname = "software_deployment.yml";
+          const workflowName = "software_deployment.yml";
           const ls = spawn("act", [
             "-W",
-            process.env.WORKFLOWPATH + "/" + workflowname,
+            `${process.env.WORKFLOWPATH}/${workflowName}`,
             "workflow_dispatch",
             "--input",
-            "deploymentOwner=" + meta.extensions.kubernetes.clustername,
+            `deploymentOwner=${eksClusterName}`,
             "--input",
-            "sourceRepository=" + item.source,
+            `sourceRepository=${item.source}`,
             "--input",
-            "sourceBranch=" + item.branch,
+            `sourceBranch=${item.branch}`,
             "--input",
-            "eksClusterName=" + meta.extensions.kubernetes.clustername,
+            `eksClusterName=${eksClusterName}`,
             "--input",
             "awsConnection=iam",
             "--input",
             "deploymentSource=act",
             "-s",
-            "GITHUB_TOKEN=" + meta.ghtoken,
+            `GITHUB_TOKEN=${meta.ghtoken}`,
           ]);
-          //const ls = spawn('ls', ['-al','/tmp'])
+
           ls.stdout.on("data", function (data) {
-            console.log("stdout: " + data.toString());
+            console.log(`stdout: ${data.toString()}`);
           });
 
           ls.stderr.on("data", function (data) {
-            console.log("stderr: " + data.toString());
+            console.log(`stderr: ${data.toString()}`);
           });
+
           ls.on("exit", function (code) {
-            console.log("child process exited with code " + code?.toString());
+            console.log(`Child process exited with code ${code?.toString()}`);
             return resolve("done");
           });
         });
@@ -327,34 +332,39 @@ async function spinUpProjects(meta: MetaObject, token: string) {
 }
 
 async function run(): Promise<void> {
-  let meta = core.getInput("ucsmetadata");
+  const meta = core.getInput("ucsmetadata");
   const metaobj = JSON.parse(meta);
   const token = core.getInput("token");
-  /*let awskey = core.getInput('awskey')
-    let awstoken = core.getInput('awstoken')
-    let awssecret = core.getInput('awssecret')*/
   const awskey = "";
   const awstoken = "";
   const awssecret = "";
-  console.log("Secret length: " + token.length);
+
+  console.log(`Secret length: ${token.length}`);
   console.log(meta);
-  console.log("The deployment type is " + metaobj.deploymentType);
-  if (meta === undefined || meta.length < 2) {
-    meta = core.getInput("eksmetadata");
-    if (meta === undefined || meta.length < 2) {
+  console.log(`The deployment type is ${metaobj.deploymentType}`);
+
+  if (!meta || meta.length < 2) {
+    const eksMeta = core.getInput("eksmetadata");
+    if (!eksMeta || eksMeta.length < 2) {
       core.setFailed("No metadata found");
+      return;
     }
+    console.log(`Found meta ${eksMeta}!`);
+    spinUpEKS(JSON.parse(eksMeta), token, awskey, awssecret, awstoken).then(() => {
+      console.log("SPINNING UP PROJECTS");
+      spinUpProjects(metaobj, token);
+    });
   } else if (metaobj.deploymentType === "teardown") {
-    console.log(`Running teardown of EKS Cluster`);
+    console.log("Running teardown of EKS Cluster");
+    tearDownEKS(metaobj, token, awskey, awssecret, awstoken);
   } else {
     console.log(`Found meta ${meta}!`);
-    // eslint-disable-next-line github/no-then
     spinUpEKS(metaobj, token, awskey, awssecret, awstoken).then(() => {
       console.log("SPINNING UP PROJECTS");
       spinUpProjects(metaobj, token);
     });
   }
-  // console.log("Issue created: %s", data.html_url);
+
   const time = new Date().toTimeString();
   core.setOutput("time", time);
 }
