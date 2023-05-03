@@ -4,7 +4,6 @@ import { MetaObject } from "./meta";
 import { runWF } from "./return-dispatch/main";
 import { runWait } from "./await-remote-run/main";
 import { ActionWorkflowInputs } from "./return-dispatch/action";
-import { GitHub } from "@actions/github/lib/utils";
 
 async function spinUpApiGatewayApiGithub(
   name: string,
