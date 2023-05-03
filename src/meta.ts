@@ -19,8 +19,17 @@ export interface Kubernetes {
   clustername: string;
 }
 
+export interface ApiGatewayApi {
+  name: string;
+}
+
+export interface ApiGateway {
+  apis: ApiGatewayApi[];
+}
+
 export interface Extensions {
   kubernetes: Kubernetes;
+  apigateway: ApiGateway;
 }
 
 export interface MetaObject {
