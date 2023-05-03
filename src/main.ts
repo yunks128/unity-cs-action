@@ -9,11 +9,13 @@ import { GitHub } from "@actions/github/lib/utils";
 async function spinUpApiGatewayApiGithub(
   name: string,
   token: string,
-  workflowname: string
+  workflowname: string,
+  teardown: string
 ){
   let input: ActionWorkflowInputs = <ActionWorkflowInputs>{};
   input = {
-      apiName: name
+      apiName: name,
+      teardown: teardown
   }
   const id: number = await runWF(
     "unity-sds",
@@ -31,7 +33,8 @@ async function spinUpApiGatewayApiGithub(
   
 async function spinUpApiGatewayApi(
   name: string,
-  workflowname: string
+  workflowname: string,
+  teardown: string
 ){
   console.log("launching act");
   console.log("writing parameters");
@@ -43,7 +46,9 @@ async function spinUpApiGatewayApi(
     "--input",
     "apiName=" + name,
     "--input",
-    "deploymentSource=act"
+    "deploymentSource=act",
+    "--input",
+    "teardown=" + teardown
   ]);
   ls.stdout.on("data", function (data) {
     console.log("stdout: " + data.toString());
@@ -60,6 +65,28 @@ async function spinUpApiGatewayApi(
   });
 }
 
+async function tearDownApiGateway(
+  meta: MetaObject,
+  token: string,
+  awskey: string,
+  awssecret: string,
+  awstoken: string
+) {
+  const workflowname = "deploy_project_apigateway.yml";
+  
+  if (meta.exectarget == "github"){
+    for ( var api of meta.extensions.apigateway.apis ){
+      await spinUpApiGatewayApiGithub(api.name, token, workflowname, "true");
+    }
+  }
+  else {
+    for ( var api of meta.extensions.apigateway.apis ){
+      await spinUpApiGatewayApi(api.name, workflowname, "true");
+    }
+  }
+
+}
+
 async function spinUpApiGateway(
   meta: MetaObject,
   token: string,
@@ -71,12 +98,12 @@ async function spinUpApiGateway(
   
   if (meta.exectarget == "github"){
     for ( var api of meta.extensions.apigateway.apis ){
-      await spinUpApiGatewayApiGithub(api.name, token, workflowname);
+      await spinUpApiGatewayApiGithub(api.name, token, workflowname, "false");
     }
   }
   else {
     for ( var api of meta.extensions.apigateway.apis ){
-      await spinUpApiGatewayApi(api.name, workflowname);
+      await spinUpApiGatewayApi(api.name, workflowname, "false");
     }
   }
 
@@ -416,7 +443,28 @@ async function spinUpExtensions(
   else {
     console.log("No extensions block found in metadata, skipping extension deployment\n metadata: %s", meta)
   }
+}
 
+async function tearDownExtensions(
+  meta: MetaObject,
+  token: string,
+  awskey: string,
+  awssecret: string,
+  awstoken: string
+) {
+  if (Object.prototype.hasOwnProperty.call(meta, "extensions") && meta.extensions) {
+    if (Object.prototype.hasOwnProperty.call(meta["extensions"], "kubernetes") && meta.extensions.kubernetes){
+      console.log("Tearing down kubernetes")
+      await tearDownEKS(meta, token, awskey, awssecret, awstoken);
+    }
+    if (Object.prototype.hasOwnProperty.call(meta["extensions"], "apigateway") && meta.extensions.apigateway){
+      console.log("Tearing down api gateway")
+      await tearDownApiGateway(meta, token, awskey, awssecret, awstoken);
+    }
+  }
+  else {
+    console.log("No extensions block found in metadata, skipping extension deployment\n metadata: %s", meta)
+  }
 }
 
 async function run(): Promise<void> {
@@ -443,8 +491,8 @@ async function run(): Promise<void> {
       spinUpProjects(metaobj, token);
     });
   } else if (metaobj.deploymentType === "teardown") {
-    console.log("Running teardown of EKS Cluster");
-    tearDownEKS(metaobj, token, awskey, awssecret, awstoken);
+    console.log("Running teardown of extensions");
+    tearDownExtensions(metaobj, token, awskey, awssecret, awstoken);
   } else {
     console.log(`Found meta ${meta}!`);
     spinUpExtensions(metaobj, token, awskey, awssecret, awstoken).then(() => {
