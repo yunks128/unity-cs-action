@@ -4,7 +4,6 @@ import { MetaObject } from "./meta";
 import { runWF } from "./return-dispatch/main";
 import { runWait } from "./await-remote-run/main";
 import { ActionWorkflowInputs } from "./return-dispatch/action";
-import { log } from "console";
 import { GitHub } from "@actions/github/lib/utils";
 
 async function spinUpApiGatewayApiGithub(
@@ -404,18 +403,18 @@ async function spinUpExtensions(
   awssecret: string,
   awstoken: string
 ) {
-  if (Object.prototype.hasOwnProperty.call(meta, "extensions")) {
-    const workflowname = "deploy_eks.yml";
-    let input: ActionWorkflowInputs = <ActionWorkflowInputs>{};
-    if (Object.prototype.hasOwnProperty.call(meta["extensions"], "kubernetes")){
+  if (Object.prototype.hasOwnProperty.call(meta, "extensions") && meta.extensions) {
+    if (Object.prototype.hasOwnProperty.call(meta["extensions"], "kubernetes") && meta.extensions.kubernetes){
+      console.log("Spinning up kubernetes")
       await spinUpEKS(meta, token, awskey, awssecret, awstoken);
     }
-    if (Object.prototype.hasOwnProperty.call(meta["extensions"], "apigateway")){
+    if (Object.prototype.hasOwnProperty.call(meta["extensions"], "apigateway") && meta.extensions.apigateway){
+      console.log("Spinning up api gateway")
       await spinUpApiGateway(meta, token, awskey, awssecret, awstoken);
     }
   }
   else {
-    log("No extensions block found in metadata, skipping extension deployment\n metadata: %s", meta)
+    console.log("No extensions block found in metadata, skipping extension deployment\n metadata: %s", meta)
   }
 
 }
