@@ -318,9 +318,8 @@ async function tearDownEKSGithub(
 
 // Spin up projects
 async function spinUpProjects(meta: MetaObject, token: string) {
-  const eksClusterName = meta.extensions.kubernetes.clustername;
-
   if (meta.services) {
+    const eksClusterName = meta.extensions.kubernetes.clustername;
     for (const [index, item] of meta.services.entries()) {
       // Run via GitHub Actions if exectarget is set to github
       if (meta.exectarget === "github") {
