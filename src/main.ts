@@ -468,6 +468,7 @@ async function tearDownExtensions(
 
 async function run(): Promise<void> {
   const meta = core.getInput("ucsmetadata");
+  console.log(meta)
   const metaobj = JSON.parse(meta);
   const token = core.getInput("token");
   const awskey = "";

@@ -9031,6 +9031,7 @@ async function tearDownExtensions(meta, token, awskey, awssecret, awstoken) {
 }
 async function run() {
   const meta = core8.getInput("ucsmetadata");
+  console.log(meta);
   const metaobj = JSON.parse(meta);
   const token = core8.getInput("token");
   const awskey = "";
