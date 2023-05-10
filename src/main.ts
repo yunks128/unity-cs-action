@@ -402,8 +402,6 @@ async function spinUpProjects(meta: MetaObject, token: string) {
             "awsConnection=iam",
             "--input",
             "deploymentSource=act",
-            "-s",
-            `GITHUB_TOKEN=${meta.ghtoken}`,
           ]);
 
           ls.stdout.on("data", function (data) {

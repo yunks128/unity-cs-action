@@ -8984,9 +8984,7 @@ async function spinUpProjects(meta, token) {
             "--input",
             "awsConnection=iam",
             "--input",
-            "deploymentSource=act",
-            "-s",
-            `GITHUB_TOKEN=${meta.ghtoken}`
+            "deploymentSource=act"
           ]);
           ls.stdout.on("data", function(data) {
             console.log(`stdout: ${data.toString()}`);
