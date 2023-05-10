@@ -8885,6 +8885,8 @@ async function tearDownEKS(meta, token, awskey, awssecret, awstoken) {
           "--input",
           "AWSCONNECTION=iam",
           "--input",
+          "TEARDOWN=true",
+          "--input",
           "META=" + JSON.stringify(meta.extensions.kubernetes)
         ]);
         ls.stdout.on("data", function(data) {
