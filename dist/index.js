@@ -8986,7 +8986,7 @@ async function spinUpProjects(meta, token) {
             "--input",
             "deploymentSource=act",
             "-s",
-            "GITHUB_TOKEN"
+            `GITHUB_TOKEN=${process.env.GITHUB_TOKEN}`
           ]);
           ls.stdout.on("data", function(data) {
             console.log(`stdout: ${data.toString()}`);

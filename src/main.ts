@@ -403,7 +403,7 @@ async function spinUpProjects(meta: MetaObject, token: string) {
             "--input",
             "deploymentSource=act",
             "-s",
-            "GITHUB_TOKEN"
+            `GITHUB_TOKEN=${process.env.GITHUB_TOKEN}`
           ]);
 
           ls.stdout.on("data", function (data) {
