@@ -8934,7 +8934,7 @@ async function tearDownEKSGithub(token, workflowname, input) {
   await runWait("unity-sds", 6e4, "unity-cs-infra", id, 3600, token);
   console.log("wf id: " + id);
 }
-async function spinUpProjects(meta, token) {
+async function spinUpTearDownProjects(meta, token, teardown) {
   if (meta.services) {
     const eksClusterName = meta.extensions.kubernetes.clustername;
     for (const [index, item] of meta.services.entries()) {
@@ -8985,6 +8985,8 @@ async function spinUpProjects(meta, token) {
             "awsConnection=iam",
             "--input",
             "deploymentSource=act",
+            "--input",
+            `teardown=${teardown}`,
             "-s",
             `GITHUB_TOKEN=${process.env.GITHUB_TOKEN}`
           ]);
@@ -9051,16 +9053,19 @@ async function run() {
     console.log(`Found meta ${eksMeta}!`);
     spinUpExtensions(JSON.parse(eksMeta), token, awskey, awssecret, awstoken).then(() => {
       console.log("SPINNING UP PROJECTS");
-      spinUpProjects(metaobj, token);
+      spinUpTearDownProjects(metaobj, token, "false");
     });
   } else if (metaobj.deploymentType === "teardown") {
     console.log("Running teardown of extensions");
-    tearDownExtensions(metaobj, token, awskey, awssecret, awstoken);
+    tearDownExtensions(metaobj, token, awskey, awssecret, awstoken).then(() => {
+      console.log("Teardown of services");
+      spinUpTearDownProjects(metaobj, token, "true");
+    });
   } else {
     console.log(`Found meta ${meta}!`);
     spinUpExtensions(metaobj, token, awskey, awssecret, awstoken).then(() => {
       console.log("SPINNING UP PROJECTS");
-      spinUpProjects(metaobj, token);
+      spinUpTearDownProjects(metaobj, token, "false");
     });
   }
   const time = new Date().toTimeString();
