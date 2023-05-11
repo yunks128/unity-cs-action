@@ -495,10 +495,10 @@ async function run(): Promise<void> {
       spinUpTearDownProjects(metaobj, token, "false");
     });
   } else if (metaobj.deploymentType === "teardown") {
-    console.log("Running teardown of extensions");
-    tearDownExtensions(metaobj, token, awskey, awssecret, awstoken).then(() => {
     console.log("Teardown of services");
-      spinUpTearDownProjects(metaobj, token, "true")
+    spinUpTearDownProjects(metaobj, token, "true").then(() => {
+      console.log("Running teardown of extensions");
+      tearDownExtensions(metaobj, token, awskey, awssecret, awstoken)
     });
   } else {
     console.log(`Found meta ${meta}!`);
