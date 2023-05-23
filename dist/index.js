@@ -8797,7 +8797,7 @@ async function spinUpEKS(meta, token, awskey, awssecret, awstoken) {
         "--input",
         "AWSCONNECTION=iam",
         "--input",
-        "DEPLOMENTSOURCE=act",
+        "DEPLOYMENTSOURCE=act",
         "--input",
         "META=" + JSON.stringify(meta.extensions.kubernetes)
       ]);

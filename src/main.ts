@@ -161,7 +161,7 @@ async function spinUpEKS(
         "--input",
         "AWSCONNECTION=iam",
         "--input",
-        "DEPLOMENTSOURCE=act",
+        "DEPLOYMENTSOURCE=act",
         "--input",
         "META=" + JSON.stringify(meta.extensions.kubernetes),
       ]);
