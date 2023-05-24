@@ -8935,7 +8935,8 @@ async function spinUpTearDownProjects(meta, token, teardown) {
           eksClusterName,
           deploymentTarget: "mcp",
           sourceRepository: item.source,
-          sourceBranch: item.branch
+          sourceBranch: item.branch,
+          deploymentName: item.name
         };
         const id = await runWF(
           "unity-sds",
@@ -8963,6 +8964,8 @@ async function spinUpTearDownProjects(meta, token, teardown) {
             `deploymentOwner=${eksClusterName}`,
             "--input",
             `sourceRepository=${item.source}`,
+            "--input",
+            `deploymentName=${item.name}`,
             "--input",
             `sourceBranch=${item.branch}`,
             "--input",

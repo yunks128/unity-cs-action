@@ -348,6 +348,7 @@ async function spinUpTearDownProjects(meta: MetaObject, token: string, teardown:
           deploymentTarget: "mcp",
           sourceRepository: item.source,
           sourceBranch: item.branch,
+          deploymentName: item.name
         };
 
         const id = await runWF(
@@ -380,6 +381,8 @@ async function spinUpTearDownProjects(meta: MetaObject, token: string, teardown:
             `deploymentOwner=${eksClusterName}`,
             "--input",
             `sourceRepository=${item.source}`,
+            "--input",
+            `deploymentName=${item.name}`,
             "--input",
             `sourceBranch=${item.branch}`,
             "--input",
