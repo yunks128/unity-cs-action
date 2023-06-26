@@ -71,15 +71,16 @@ async function tearDownApiGateway(
   awssecret: string,
   awstoken: string
 ) {
+  let api;
   const workflowname = "deploy_project_apigateway.yml";
   
-  if (meta.exectarget == "github"){
-    for ( var api of meta.extensions.apigateway.apis ){
+  if (meta.exectarget === "github"){
+    for (api of meta.extensions.apigateway.apis ){
       await spinUpApiGatewayApiGithub(api.name, token, workflowname, "true");
     }
   }
   else {
-    for ( var api of meta.extensions.apigateway.apis ){
+    for (api of meta.extensions.apigateway.apis ){
       await spinUpApiGatewayApi(api.name, workflowname, "true");
     }
   }
@@ -93,15 +94,16 @@ async function spinUpApiGateway(
   awssecret: string,
   awstoken: string
 ) {
+  let api;
   const workflowname = "deploy_project_apigateway.yml";
   
-  if (meta.exectarget == "github"){
-    for ( var api of meta.extensions.apigateway.apis ){
+  if (meta.exectarget === "github"){
+    for (api of meta.extensions.apigateway.apis ){
       await spinUpApiGatewayApiGithub(api.name, token, workflowname, "false");
     }
   }
   else {
-    for ( var api of meta.extensions.apigateway.apis ){
+    for (api of meta.extensions.apigateway.apis ){
       await spinUpApiGatewayApi(api.name, workflowname, "false");
     }
   }
