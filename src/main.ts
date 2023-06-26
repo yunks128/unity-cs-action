@@ -1,21 +1,21 @@
 import { spawn } from "child_process";
 import * as core from "@actions/core";
-import { MetaObject } from "./meta";
 import { runWF } from "./return-dispatch/main";
 import { runWait } from "./await-remote-run/main";
 import { ActionWorkflowInputs } from "./return-dispatch/action";
+import { ActionMeta } from "./proto/unity-management-console/protobuf/extensions";
 
 async function spinUpApiGatewayApiGithub(
   name: string,
   token: string,
   workflowname: string,
   teardown: string
-){
-  let input: ActionWorkflowInputs = <ActionWorkflowInputs>{};
+) {
+  let input: ActionWorkflowInputs;
   input = {
-      apiName: name,
-      teardown: teardown
-  }
+    apiName: name,
+    teardown: teardown,
+  };
   const id: number = await runWF(
     "unity-sds",
     "refs/heads/main",
@@ -29,12 +29,12 @@ async function spinUpApiGatewayApiGithub(
   await runWait("unity-sds", 60000, "unity-cs-infra", id, 3600, token);
   console.log("wf id: " + id);
 }
-  
+
 async function spinUpApiGatewayApi(
   name: string,
   workflowname: string,
   teardown: string
-){
+) {
   console.log("launching act");
   console.log("writing parameters");
   const ls = spawn("act", [
@@ -47,7 +47,7 @@ async function spinUpApiGatewayApi(
     "--input",
     "deploymentSource=act",
     "--input",
-    "teardown=" + teardown
+    "teardown=" + teardown,
   ]);
   ls.stdout.on("data", function (data) {
     console.log("stdout: " + data.toString());
@@ -64,72 +64,56 @@ async function spinUpApiGatewayApi(
   });
 }
 
-async function tearDownApiGateway(
-  meta: MetaObject,
-  token: string,
-  awskey: string,
-  awssecret: string,
-  awstoken: string
-) {
+async function tearDownApiGateway(meta: ActionMeta, token: string) {
   let api;
   const workflowname = "deploy_project_apigateway.yml";
-  
-  if (meta.exectarget === "github"){
-    for (api of meta.extensions.apigateway.apis ){
+
+  if (meta.exectarget === "github") {
+    for (api of meta.extensions?.apigateway.apis) {
       await spinUpApiGatewayApiGithub(api.name, token, workflowname, "true");
     }
-  }
-  else {
-    for (api of meta.extensions.apigateway.apis ){
+  } else {
+    for (api of meta.extensions?.apigateway.apis) {
       await spinUpApiGatewayApi(api.name, workflowname, "true");
     }
   }
-
 }
 
-async function spinUpApiGateway(
-  meta: MetaObject,
-  token: string,
-  awskey: string,
-  awssecret: string,
-  awstoken: string
-) {
+async function spinUpApiGateway(meta: ActionMeta, token: string) {
   let api;
   const workflowname = "deploy_project_apigateway.yml";
-  
-  if (meta.exectarget === "github"){
-    for (api of meta.extensions.apigateway.apis ){
+
+  if (meta.exectarget === "github") {
+    for (api of meta.extensions?.apigateway.apis) {
       await spinUpApiGatewayApiGithub(api.name, token, workflowname, "false");
     }
-  }
-  else {
-    for (api of meta.extensions.apigateway.apis ){
+  } else {
+    for (api of meta.extensions?.apigateway.apis) {
       await spinUpApiGatewayApi(api.name, workflowname, "false");
     }
   }
-
 }
 
 async function spinUpEKS(
-  meta: MetaObject,
+  meta: ActionMeta,
   token: string,
   awskey: string,
   awssecret: string,
   awstoken: string
 ) {
   const workflowname = "deploy_eks.yml";
-  let input: ActionWorkflowInputs = <ActionWorkflowInputs>{};
+  let input: ActionWorkflowInputs;
 
   // If we have a kubernetesd block but the exec target is not github
   if (meta.exectarget !== "github") {
     input = {
-      META: JSON.stringify(meta.extensions.kubernetes),
+      META: JSON.stringify(meta.extensions?.eks),
     };
   }
   // If we have a kubernetes block and there are AWS keys set (we're assuming in a github action not act)
   else if (awskey !== "") {
     input = {
-      META: JSON.stringify(meta.extensions.kubernetes),
+      META: JSON.stringify(meta.extensions?.eks),
       KEY: awskey,
       SECRET: awssecret,
       TOKEN: awstoken,
@@ -138,14 +122,14 @@ async function spinUpEKS(
   // If there is a kubernetes block, to run in github and no AWS keys are set
   else {
     input = {
-      META: JSON.stringify(meta.extensions.kubernetes),
+      META: JSON.stringify(meta.extensions?.eks),
     };
   }
   console.log("call eks workflow with key");
   // Check for nodegroup block, if not set, we assume we're reusing an existing EKS cluster
   if (
     Object.prototype.hasOwnProperty.call(
-      meta.extensions.kubernetes,
+      meta.extensions?.eks,
       "nodegroups"
     )
   ) {
@@ -165,7 +149,7 @@ async function spinUpEKS(
         "--input",
         "DEPLOYMENTSOURCE=act",
         "--input",
-        "META=" + JSON.stringify(meta.extensions.kubernetes),
+        "META=" + JSON.stringify(meta.extensions?.eks),
       ]);
       ls.stdout.on("data", function (data) {
         console.log("stdout: " + data.toString());
@@ -185,7 +169,7 @@ async function spinUpEKS(
 }
 
 async function tearDownEKS(
-  meta: MetaObject,
+  meta: ActionMeta,
   token: string,
   awskey: string,
   awssecret: string,
@@ -202,8 +186,8 @@ async function tearDownEKS(
       meta.exectarget !== "github"
     ) {
       input = {
-          META: JSON.stringify(meta.extensions.kubernetes),
-          TEARDOWN: "true"
+        META: JSON.stringify(meta.extensions?.eks),
+        TEARDOWN: "true",
       };
     }
     // If we have a kubernetes block and there are AWS keys set (we're assuming in a github action not act)
@@ -212,11 +196,11 @@ async function tearDownEKS(
       awskey !== ""
     ) {
       input = {
-          META: JSON.stringify(meta.extensions.kubernetes),
-          KEY: awskey,
-          SECRET: awssecret,
-          TOKEN: awstoken,
-          TEARDOWN: "true"
+        META: JSON.stringify(meta.extensions?.eks),
+        KEY: awskey,
+        SECRET: awssecret,
+        TOKEN: awstoken,
+        TEARDOWN: "true",
       };
     }
     // If there is a kubernetes block, to run in github and no AWS keys are set
@@ -224,8 +208,8 @@ async function tearDownEKS(
       Object.prototype.hasOwnProperty.call(meta["extensions"], "kubernetes")
     ) {
       input = {
-          META: JSON.stringify(meta.extensions.kubernetes),
-          TEARDOWN: "true"
+        META: JSON.stringify(meta.extensions?.eks),
+        TEARDOWN: "true",
       };
     }
     console.log("call eks workflow with key");
@@ -233,7 +217,7 @@ async function tearDownEKS(
     if (
       Object.prototype.hasOwnProperty.call(meta["extensions"], "kubernetes") &&
       Object.prototype.hasOwnProperty.call(
-        meta.extensions.kubernetes,
+        meta.extensions?.eks,
         "nodegroups"
       )
     ) {
@@ -269,7 +253,7 @@ async function tearDownEKS(
           "--input",
           "TEARDOWN=true",
           "--input",
-          "META=" + JSON.stringify(meta.extensions.kubernetes),
+          "META=" + JSON.stringify(meta.extensions?.eks),
         ]);
         ls.stdout.on("data", function (data) {
           console.log("stdout: " + data.toString());
@@ -332,9 +316,13 @@ async function tearDownEKSGithub(
 }
 
 // Spin up projects
-async function spinUpTearDownProjects(meta: MetaObject, token: string, teardown: string) {
+async function spinUpTearDownProjects(
+  meta: ActionMeta,
+  token: string,
+  teardown: string
+) {
   if (meta.services) {
-    const eksClusterName = meta.extensions.kubernetes.clustername;
+    const eksClusterName = meta.extensions?.eks?.clustername;
     for (const [index, item] of meta.services.entries()) {
       // Run via GitHub Actions if exectarget is set to github
       if (meta.exectarget === "github") {
@@ -350,7 +338,7 @@ async function spinUpTearDownProjects(meta: MetaObject, token: string, teardown:
           deploymentTarget: "mcp",
           sourceRepository: item.source,
           sourceBranch: item.branch,
-          deploymentName: item.name
+          deploymentName: item.name,
         };
 
         const id = await runWF(
@@ -396,7 +384,7 @@ async function spinUpTearDownProjects(meta: MetaObject, token: string, teardown:
             "--input",
             `teardown=${teardown}`,
             "-s",
-            `GITHUB_TOKEN=${process.env.GITHUB_TOKEN}`
+            `GITHUB_TOKEN=${process.env.GITHUB_TOKEN}`,
           ]);
 
           ls.stdout.on("data", function (data) {
@@ -418,60 +406,94 @@ async function spinUpTearDownProjects(meta: MetaObject, token: string, teardown:
 }
 
 async function spinUpExtensions(
-  meta: MetaObject,
+  meta: ActionMeta,
   token: string,
   awskey: string,
   awssecret: string,
   awstoken: string
 ) {
-  if (Object.prototype.hasOwnProperty.call(meta, "extensions") && meta.extensions) {
-    if (Object.prototype.hasOwnProperty.call(meta["extensions"], "kubernetes") && meta.extensions.kubernetes){
-      console.log("Spinning up kubernetes")
+  if (
+    Object.prototype.hasOwnProperty.call(meta, "extensions") &&
+    meta.extensions
+  ) {
+    if (
+      Object.prototype.hasOwnProperty.call(meta["extensions"], "kubernetes") &&
+      meta.extensions.eks
+    ) {
+      console.log("Spinning up kubernetes");
       await spinUpEKS(meta, token, awskey, awssecret, awstoken);
     }
-    if (Object.prototype.hasOwnProperty.call(meta["extensions"], "apigateway") && meta.extensions.apigateway){
-      console.log("Spinning up api gateway")
-      await spinUpApiGateway(meta, token, awskey, awssecret, awstoken);
+    if (
+      Object.prototype.hasOwnProperty.call(meta["extensions"], "apigateway") &&
+      meta.extensions.apigateway
+    ) {
+      console.log("Spinning up api gateway");
+      await spinUpApiGateway(meta, token);
     }
-  }
-  else {
-    console.log("No extensions block found in metadata, skipping extension deployment\n metadata: %s", meta)
+  } else {
+    console.log(
+      "No extensions block found in metadata, skipping extension deployment\n metadata: %s",
+      meta
+    );
   }
 }
 
 async function tearDownExtensions(
-  meta: MetaObject,
+  meta: ActionMeta,
   token: string,
   awskey: string,
   awssecret: string,
   awstoken: string
 ) {
-  if (Object.prototype.hasOwnProperty.call(meta, "extensions") && meta.extensions) {
-    if (Object.prototype.hasOwnProperty.call(meta["extensions"], "kubernetes") && meta.extensions.kubernetes){
-      console.log("Tearing down kubernetes")
+  if (
+    Object.prototype.hasOwnProperty.call(meta, "extensions") &&
+    meta.extensions
+  ) {
+    if (
+      Object.prototype.hasOwnProperty.call(meta["extensions"], "kubernetes") &&
+      meta.extensions.eks
+    ) {
+      console.log("Tearing down kubernetes");
       await tearDownEKS(meta, token, awskey, awssecret, awstoken);
     }
-    if (Object.prototype.hasOwnProperty.call(meta["extensions"], "apigateway") && meta.extensions.apigateway){
-      console.log("Tearing down api gateway")
-      await tearDownApiGateway(meta, token, awskey, awssecret, awstoken);
+    if (
+      Object.prototype.hasOwnProperty.call(meta["extensions"], "apigateway") &&
+      meta.extensions.apigateway
+    ) {
+      console.log("Tearing down api gateway");
+      await tearDownApiGateway(meta, token);
     }
+  } else {
+    console.log(
+      "No extensions block found in metadata, skipping extension deployment\n metadata: %s",
+      meta
+    );
   }
-  else {
-    console.log("No extensions block found in metadata, skipping extension deployment\n metadata: %s", meta)
+}
+
+function base64ToByteArray(base64String: string): Uint8Array {
+  const binaryString = atob(base64String);
+  const len = binaryString.length;
+  const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
   }
+  return bytes;
 }
 
 async function run(): Promise<void> {
   const meta = core.getInput("ucsmetadata");
-  console.log(meta)
-  const metaobj = JSON.parse(meta);
+  const byteArray = base64ToByteArray(meta);
+
+  const metaobj = ActionMeta.decode(byteArray);
+  console.log(metaobj);
+  //const metaobj = JSON.parse(meta);
   const token = core.getInput("token");
   const awskey = "";
   const awstoken = "";
   const awssecret = "";
 
   console.log(`Secret length: ${token.length}`);
-  console.log(meta);
   console.log(`The deployment type is ${metaobj.deploymentType}`);
 
   if (!meta || meta.length < 2) {
@@ -481,7 +503,13 @@ async function run(): Promise<void> {
       return;
     }
     console.log(`Found meta ${eksMeta}!`);
-    spinUpExtensions(JSON.parse(eksMeta), token, awskey, awssecret, awstoken).then(() => {
+    spinUpExtensions(
+      JSON.parse(eksMeta),
+      token,
+      awskey,
+      awssecret,
+      awstoken
+    ).then(() => {
       console.log("SPINNING UP PROJECTS");
       spinUpTearDownProjects(metaobj, token, "false");
     });
@@ -489,7 +517,7 @@ async function run(): Promise<void> {
     console.log("Teardown of services");
     spinUpTearDownProjects(metaobj, token, "true").then(() => {
       console.log("Running teardown of extensions");
-      tearDownExtensions(metaobj, token, awskey, awssecret, awstoken)
+      tearDownExtensions(metaobj, token, awskey, awssecret, awstoken);
     });
   } else {
     console.log(`Found meta ${meta}!`);
