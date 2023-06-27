@@ -10867,7 +10867,7 @@ async function spinUpApiGatewayApi(name, workflowname, teardown) {
 // src/main.ts
 async function spinUpExtensions(meta, token, awskey, awssecret, awstoken) {
   if (meta.extensions) {
-    if (Object.prototype.hasOwnProperty.call(meta["extensions"], "kubernetes") && meta.extensions.eks) {
+    if (meta.extensions.eks) {
       console.log("Spinning up kubernetes");
       await spinUpEKS(meta, token, awskey, awssecret, awstoken);
     }
@@ -10883,12 +10883,12 @@ async function spinUpExtensions(meta, token, awskey, awssecret, awstoken) {
   }
 }
 async function tearDownExtensions(meta, token, awskey, awssecret, awstoken) {
-  if (Object.prototype.hasOwnProperty.call(meta, "extensions") && meta.extensions) {
-    if (Object.prototype.hasOwnProperty.call(meta["extensions"], "kubernetes") && meta.extensions.eks) {
+  if (meta.extensions) {
+    if (meta.extensions.eks) {
       console.log("Tearing down kubernetes");
       await tearDownEKS(meta, token, awskey, awssecret, awstoken);
     }
-    if (Object.prototype.hasOwnProperty.call(meta["extensions"], "apigateway") && meta.extensions.apis) {
+    if (meta.extensions.apis) {
       console.log("Tearing down api gateway");
       await tearDownApiGateway(meta, token);
     }

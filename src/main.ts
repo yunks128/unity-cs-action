@@ -11,10 +11,7 @@ async function spinUpExtensions(
   awstoken: string
 ) {
   if (meta.extensions) {
-    if (
-      Object.prototype.hasOwnProperty.call(meta["extensions"], "kubernetes") &&
-      meta.extensions.eks
-    ) {
+    if (meta.extensions.eks) {
       console.log("Spinning up kubernetes");
       await spinUpEKS(meta, token, awskey, awssecret, awstoken);
     }
@@ -37,21 +34,12 @@ async function tearDownExtensions(
   awssecret: string,
   awstoken: string
 ) {
-  if (
-    Object.prototype.hasOwnProperty.call(meta, "extensions") &&
-    meta.extensions
-  ) {
-    if (
-      Object.prototype.hasOwnProperty.call(meta["extensions"], "kubernetes") &&
-      meta.extensions.eks
-    ) {
+  if ( meta.extensions) {
+    if (meta.extensions.eks) {
       console.log("Tearing down kubernetes");
       await tearDownEKS(meta, token, awskey, awssecret, awstoken);
     }
-    if (
-      Object.prototype.hasOwnProperty.call(meta["extensions"], "apigateway") &&
-      meta.extensions.apis
-    ) {
+    if (meta.extensions.apis) {
       console.log("Tearing down api gateway");
       await tearDownApiGateway(meta, token);
     }
