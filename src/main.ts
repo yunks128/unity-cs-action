@@ -11,8 +11,7 @@ async function spinUpApiGatewayApiGithub(
   workflowname: string,
   teardown: string
 ) {
-  let input: ActionWorkflowInputs;
-  input = {
+  const input: ActionWorkflowInputs = {
     apiName: name,
     teardown: teardown,
   };
@@ -69,12 +68,16 @@ async function tearDownApiGateway(meta: ActionMeta, token: string) {
   const workflowname = "deploy_project_apigateway.yml";
 
   if (meta.exectarget === "github") {
-    for (api of meta.extensions?.apigateway.apis) {
-      await spinUpApiGatewayApiGithub(api.name, token, workflowname, "true");
+    if (meta.extensions?.apis) {
+      for (api of meta.extensions?.apis.apis) {
+        await spinUpApiGatewayApiGithub(api.name, token, workflowname, "true");
+      }
     }
   } else {
-    for (api of meta.extensions?.apigateway.apis) {
-      await spinUpApiGatewayApi(api.name, workflowname, "true");
+    if (meta.extensions?.apis) {
+      for (api of meta.extensions?.apis.apis) {
+        await spinUpApiGatewayApi(api.name, workflowname, "true");
+      }
     }
   }
 }
@@ -84,12 +87,16 @@ async function spinUpApiGateway(meta: ActionMeta, token: string) {
   const workflowname = "deploy_project_apigateway.yml";
 
   if (meta.exectarget === "github") {
-    for (api of meta.extensions?.apigateway.apis) {
-      await spinUpApiGatewayApiGithub(api.name, token, workflowname, "false");
+    if (meta.extensions?.apis) {
+      for (api of meta.extensions?.apis.apis) {
+        await spinUpApiGatewayApiGithub(api.name, token, workflowname, "false");
+      }
     }
   } else {
-    for (api of meta.extensions?.apigateway.apis) {
-      await spinUpApiGatewayApi(api.name, workflowname, "false");
+    if (meta.extensions?.apis) {
+      for (api of meta.extensions?.apis.apis) {
+        await spinUpApiGatewayApi(api.name, workflowname, "false");
+      }
     }
   }
 }
@@ -128,10 +135,7 @@ async function spinUpEKS(
   console.log("call eks workflow with key");
   // Check for nodegroup block, if not set, we assume we're reusing an existing EKS cluster
   if (
-    Object.prototype.hasOwnProperty.call(
-      meta.extensions?.eks,
-      "nodegroups"
-    )
+    Object.prototype.hasOwnProperty.call(meta.extensions?.eks, "nodegroups")
   ) {
     // If the exec target is github we want to run using Github CI
     if (meta.exectarget === "github") {
@@ -216,10 +220,7 @@ async function tearDownEKS(
     // Check for nodegroup block, if not set, we assume we're reusing an existing EKS cluster
     if (
       Object.prototype.hasOwnProperty.call(meta["extensions"], "kubernetes") &&
-      Object.prototype.hasOwnProperty.call(
-        meta.extensions?.eks,
-        "nodegroups"
-      )
+      Object.prototype.hasOwnProperty.call(meta.extensions?.eks, "nodegroups")
     ) {
       // If the exec target is github we want to run using Github CI
       if (meta.exectarget === "github") {
@@ -322,7 +323,8 @@ async function spinUpTearDownProjects(
   teardown: string
 ) {
   if (meta.services) {
-    const eksClusterName = meta.extensions?.eks?.clustername;
+    const eksClusterName =
+      meta.extensions?.eks?.clustername || "defaultClusterName";
     for (const [index, item] of meta.services.entries()) {
       // Run via GitHub Actions if exectarget is set to github
       if (meta.exectarget === "github") {
@@ -425,7 +427,7 @@ async function spinUpExtensions(
     }
     if (
       Object.prototype.hasOwnProperty.call(meta["extensions"], "apigateway") &&
-      meta.extensions.apigateway
+      meta.extensions.apis
     ) {
       console.log("Spinning up api gateway");
       await spinUpApiGateway(meta, token);
@@ -458,7 +460,7 @@ async function tearDownExtensions(
     }
     if (
       Object.prototype.hasOwnProperty.call(meta["extensions"], "apigateway") &&
-      meta.extensions.apigateway
+      meta.extensions.apis
     ) {
       console.log("Tearing down api gateway");
       await tearDownApiGateway(meta, token);

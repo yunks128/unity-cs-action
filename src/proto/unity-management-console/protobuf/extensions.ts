@@ -43,6 +43,7 @@ export interface ActionMeta {
   deploymentName: string;
   services: ActionMeta_Services[];
   extensions: ActionMeta_Extensions | undefined;
+  deploymentType: string;
 }
 
 export interface ActionMeta_Services {
@@ -54,6 +55,15 @@ export interface ActionMeta_Services {
 
 export interface ActionMeta_Extensions {
   eks: ActionMeta_Extensions_Eks | undefined;
+  apis: ActionMeta_Extensions_Apigateway | undefined;
+}
+
+export interface ActionMeta_Extensions_Apis {
+  name: string;
+}
+
+export interface ActionMeta_Extensions_Apigateway {
+  apis: ActionMeta_Extensions_Apis[];
 }
 
 export interface ActionMeta_Extensions_Nodegroups {
@@ -584,7 +594,14 @@ export const Install_Extensions_Eks = {
 };
 
 function createBaseActionMeta(): ActionMeta {
-  return { metadataVersion: "", exectarget: "", deploymentName: "", services: [], extensions: undefined };
+  return {
+    metadataVersion: "",
+    exectarget: "",
+    deploymentName: "",
+    services: [],
+    extensions: undefined,
+    deploymentType: "",
+  };
 }
 
 export const ActionMeta = {
@@ -603,6 +620,9 @@ export const ActionMeta = {
     }
     if (message.extensions !== undefined) {
       ActionMeta_Extensions.encode(message.extensions, writer.uint32(42).fork()).ldelim();
+    }
+    if (message.deploymentType !== "") {
+      writer.uint32(50).string(message.deploymentType);
     }
     return writer;
   },
@@ -649,6 +669,13 @@ export const ActionMeta = {
 
           message.extensions = ActionMeta_Extensions.decode(reader, reader.uint32());
           continue;
+        case 6:
+          if (tag !== 50) {
+            break;
+          }
+
+          message.deploymentType = reader.string();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -665,6 +692,7 @@ export const ActionMeta = {
       deploymentName: isSet(object.deploymentName) ? String(object.deploymentName) : "",
       services: Array.isArray(object?.services) ? object.services.map((e: any) => ActionMeta_Services.fromJSON(e)) : [],
       extensions: isSet(object.extensions) ? ActionMeta_Extensions.fromJSON(object.extensions) : undefined,
+      deploymentType: isSet(object.deploymentType) ? String(object.deploymentType) : "",
     };
   },
 
@@ -680,6 +708,7 @@ export const ActionMeta = {
     }
     message.extensions !== undefined &&
       (obj.extensions = message.extensions ? ActionMeta_Extensions.toJSON(message.extensions) : undefined);
+    message.deploymentType !== undefined && (obj.deploymentType = message.deploymentType);
     return obj;
   },
 
@@ -696,6 +725,7 @@ export const ActionMeta = {
     message.extensions = (object.extensions !== undefined && object.extensions !== null)
       ? ActionMeta_Extensions.fromPartial(object.extensions)
       : undefined;
+    message.deploymentType = object.deploymentType ?? "";
     return message;
   },
 };
@@ -798,13 +828,16 @@ export const ActionMeta_Services = {
 };
 
 function createBaseActionMeta_Extensions(): ActionMeta_Extensions {
-  return { eks: undefined };
+  return { eks: undefined, apis: undefined };
 }
 
 export const ActionMeta_Extensions = {
   encode(message: ActionMeta_Extensions, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.eks !== undefined) {
       ActionMeta_Extensions_Eks.encode(message.eks, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.apis !== undefined) {
+      ActionMeta_Extensions_Apigateway.encode(message.apis, writer.uint32(18).fork()).ldelim();
     }
     return writer;
   },
@@ -823,6 +856,13 @@ export const ActionMeta_Extensions = {
 
           message.eks = ActionMeta_Extensions_Eks.decode(reader, reader.uint32());
           continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.apis = ActionMeta_Extensions_Apigateway.decode(reader, reader.uint32());
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -833,12 +873,17 @@ export const ActionMeta_Extensions = {
   },
 
   fromJSON(object: any): ActionMeta_Extensions {
-    return { eks: isSet(object.eks) ? ActionMeta_Extensions_Eks.fromJSON(object.eks) : undefined };
+    return {
+      eks: isSet(object.eks) ? ActionMeta_Extensions_Eks.fromJSON(object.eks) : undefined,
+      apis: isSet(object.apis) ? ActionMeta_Extensions_Apigateway.fromJSON(object.apis) : undefined,
+    };
   },
 
   toJSON(message: ActionMeta_Extensions): unknown {
     const obj: any = {};
     message.eks !== undefined && (obj.eks = message.eks ? ActionMeta_Extensions_Eks.toJSON(message.eks) : undefined);
+    message.apis !== undefined &&
+      (obj.apis = message.apis ? ActionMeta_Extensions_Apigateway.toJSON(message.apis) : undefined);
     return obj;
   },
 
@@ -851,6 +896,131 @@ export const ActionMeta_Extensions = {
     message.eks = (object.eks !== undefined && object.eks !== null)
       ? ActionMeta_Extensions_Eks.fromPartial(object.eks)
       : undefined;
+    message.apis = (object.apis !== undefined && object.apis !== null)
+      ? ActionMeta_Extensions_Apigateway.fromPartial(object.apis)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseActionMeta_Extensions_Apis(): ActionMeta_Extensions_Apis {
+  return { name: "" };
+}
+
+export const ActionMeta_Extensions_Apis = {
+  encode(message: ActionMeta_Extensions_Apis, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.name !== "") {
+      writer.uint32(10).string(message.name);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ActionMeta_Extensions_Apis {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseActionMeta_Extensions_Apis();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.name = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ActionMeta_Extensions_Apis {
+    return { name: isSet(object.name) ? String(object.name) : "" };
+  },
+
+  toJSON(message: ActionMeta_Extensions_Apis): unknown {
+    const obj: any = {};
+    message.name !== undefined && (obj.name = message.name);
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ActionMeta_Extensions_Apis>, I>>(base?: I): ActionMeta_Extensions_Apis {
+    return ActionMeta_Extensions_Apis.fromPartial(base ?? {});
+  },
+
+  fromPartial<I extends Exact<DeepPartial<ActionMeta_Extensions_Apis>, I>>(object: I): ActionMeta_Extensions_Apis {
+    const message = createBaseActionMeta_Extensions_Apis();
+    message.name = object.name ?? "";
+    return message;
+  },
+};
+
+function createBaseActionMeta_Extensions_Apigateway(): ActionMeta_Extensions_Apigateway {
+  return { apis: [] };
+}
+
+export const ActionMeta_Extensions_Apigateway = {
+  encode(message: ActionMeta_Extensions_Apigateway, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.apis) {
+      ActionMeta_Extensions_Apis.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ActionMeta_Extensions_Apigateway {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseActionMeta_Extensions_Apigateway();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.apis.push(ActionMeta_Extensions_Apis.decode(reader, reader.uint32()));
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ActionMeta_Extensions_Apigateway {
+    return {
+      apis: Array.isArray(object?.apis) ? object.apis.map((e: any) => ActionMeta_Extensions_Apis.fromJSON(e)) : [],
+    };
+  },
+
+  toJSON(message: ActionMeta_Extensions_Apigateway): unknown {
+    const obj: any = {};
+    if (message.apis) {
+      obj.apis = message.apis.map((e) => e ? ActionMeta_Extensions_Apis.toJSON(e) : undefined);
+    } else {
+      obj.apis = [];
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ActionMeta_Extensions_Apigateway>, I>>(
+    base?: I,
+  ): ActionMeta_Extensions_Apigateway {
+    return ActionMeta_Extensions_Apigateway.fromPartial(base ?? {});
+  },
+
+  fromPartial<I extends Exact<DeepPartial<ActionMeta_Extensions_Apigateway>, I>>(
+    object: I,
+  ): ActionMeta_Extensions_Apigateway {
+    const message = createBaseActionMeta_Extensions_Apigateway();
+    message.apis = object.apis?.map((e) => ActionMeta_Extensions_Apis.fromPartial(e)) || [];
     return message;
   },
 };
